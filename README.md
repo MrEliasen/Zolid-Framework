@@ -1,8 +1,8 @@
-##The Road To Legend - 0.0.1
-PHP RPG learning project. The intention of this project is to learn and share. If you have any feedback in terms of "best practice" or other improvements, then I would very much like to hear from you!
+##Zolid-RPG - 0.0.1
+The Zolid-RPG project is a "Just For Fun" project where I try different types of coding techniques and structures. I thought I would make it Open Source in case anyone could benefit from it. Once version 0.0.1 is available I will setup a forum where people can talk about Customisations, show off their custom versions and so on.
 
 ##License
-- This project is released under the BSD 3-Clause License - http://opensource.org/licenses/BSD-3-Clause
+- This project will be released under the Apache License 2.0 (Apache-2.0) License - http://opensource.org/licenses/Apache-2.0
 
 ##Contact
 - Email: mse@zolid.eu
