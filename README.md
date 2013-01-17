@@ -1,5 +1,5 @@
-##Zolid-RPG - 0.0.1
-The Zolid-RPG project is a "Just For Fun" project where I try different types of coding techniques and structures. I thought I would make it Open Source in case anyone could benefit from it. Once version 0.0.1 is available I will setup a forum where people can share snippets and so on.
+##Zolid-Framework - 0.0.1
+This framework is just a "simple" framework on which you can build your own sites. It comes with a build in simple user management system to handle sign ups, logins and so on. There are several security implementations build in as well, to protect against sql injections, XSS, CSRF and several session security features.
 
 ##License
 - This project will be released under the MIT License - http://opensource.org/licenses/mit-license.php
