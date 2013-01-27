@@ -3,8 +3,10 @@ This framework is just a "simple" framework on which you can build your own site
 
 **Remember, this is a framework for you to build on, not a complete user system. It does not come with a control panel or like.**
 
+I will be adding some documentation soon.
+
 ##Demo
-[Click Here](zolidframe.zolidcore.com) to see a live functioning demo.
+[Click Here](http://zolidframe.zolidcore.com) to see a live functioning demo.
 
 ##Requirements
 **User**

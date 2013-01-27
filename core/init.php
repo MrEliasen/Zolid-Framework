@@ -16,7 +16,7 @@ try
     
     require_once(CORE_PATH . '/classes/core.class.php'); 
     require_once(CORE_PATH . '/classes/user.class.php'); ## Extends core
-    require_once(CORE_PATH . '/classes/template.class.php'); ## Extends character
+    require_once(CORE_PATH . '/classes/template.class.php'); ## Extends user
 }
 catch (Exception $e)
 {
