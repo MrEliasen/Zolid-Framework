@@ -115,10 +115,42 @@ return array(
 				'block3_body' => 'The Zolid Framework is coded by <a href="http://twitter.com/markeliasen">@MarkElisen</a>, using the awesome <a href="http://twitter.github.com/bootstrap/index.html">Twitter Bootstrap</a> for the design.'
 			),
 			'recover' => array(
+				'recover_title' => 'Recover Account',
+				'recover_text' => 'Did you forget your account password? No problem at all!<br />Just type the e-mail your used to sign up with in the fields below, and a password reset link will be sent to you.',
+				'recover_email' => 'E-mail',
+				'recover_submit' => 'Reset Password!'
 			),
 			'register' => array(
+				'register_loggedin' => 'You already have an account.. you are already logged in you know!',
+				'register_title' => 'Create new account',
+				'register_username' => 'Username',
+				'register_email' => 'E-mail',
+				'register_password' => 'Password',
+				'register_verify' => 'Verify Password',
+				'register_tos_part1' => 'I have read and agree to the',
+				'register_tos_part2' => 'and the',
+				'register_tos' => 'Terms of Service',
+				'register_pp' => 'Privacy Policy',
+				'register_submit' => 'Crate Free Account'
 			),
 			'settings' => array(
+				'settings_avatar1' => 'Update your avatar at',
+				'settings_avatar2' => 'Gravatar.com',
+				'settings_username' => 'Username',
+				'settings_emaul' => 'Email',
+				'settings_password' => 'New Password',
+				'settings_verify' => 'Confirm New Password',
+				'settings_passhelp' => 'Leave the password fields blank if you do not wish to change your password.',
+				'settings_curpass' => 'Current Password',
+				'settings_curpasshelp' => 'You need to type in your current password for security reasons whenever you make changes to your account.',
+				'settings_submit' => 'Save Settings',
+				'settings_mailtitle' => 'Mail Settings',
+				'settings_admin' => 'Administation',
+				'settings_adminhelp' => 'Enabling this option will add your email address to the administrators mail list and you will receive any updates sent from',
+				'settings_members' => 'Members',
+				'settings_membershelp' => 'Enabling this option will allow other members to send you emails from your profile. Your e-mail will not be visible to other members.',
+				'settings_generaltitle' => 'General Settings',
+				'settings_language' => 'Language'
 			)
 		)
     )

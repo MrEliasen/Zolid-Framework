@@ -7,7 +7,7 @@ if(!defined('CORE_PATH')){
 ?>
 		<div class="row">
 			<div class="span12">
-				<p>You already have an account.. you are already logged in you know!</p>
+				<p><?php echo $this->lang['core']['templates']['register']['register_loggedin']; ?></p>
 			</div>
 		</div>
 
@@ -21,13 +21,13 @@ if(!defined('CORE_PATH')){
 				<?php echo Notifications::showNotification('register_1'); ?>					
 				<form id="form_signup" autocomplete="off" method="post" action="<?php echo $this->__get('base_url'); ?>/register">
 					<fieldset>
-						<input name="username" id="username" class="span3" type="text" placeholder="Username">
+						<input name="username" id="username" class="span3" type="text" placeholder="<?php echo $this->lang['core']['templates']['register']['register_username']; ?>">
 						<br />
-						<input name="email" id="email" class="span3" type="text" placeholder="E-mail">
+						<input name="email" id="email" class="span3" type="text" placeholder="<?php echo $this->lang['core']['templates']['register']['register_email']; ?>">
 						<br />
-						<input name="password" id="password" class="span3" type="password" placeholder="Password">
+						<input name="password" id="password" class="span3" type="password" placeholder="<?php echo $this->lang['core']['templates']['register']['register_password']; ?>">
 						<br />
-						<input name="password2" class="span3" type="password" placeholder="Verify Password">
+						<input name="password2" class="span3" type="password" placeholder="<?php echo $this->lang['core']['templates']['register']['register_verify']; ?>">
 						
 						<div class="password_strength_container">
 							<div class="password_strength_wrapper">
@@ -43,10 +43,13 @@ if(!defined('CORE_PATH')){
 
 						<label class="checkbox">
 							<input name="terms" type="checkbox" class="switch icons">
-							I have read and agree to the <a href="#" class="highlight" data-area="#terms_scroller">Terms of Service</a> and the <a href="#" class="highlight" data-area="#privacy_scroller">privacy policy</a>.
+							<?php echo $this->lang['core']['templates']['register']['register_tos_part1']; ?>
+                            <a href="#" class="highlight" data-area="#terms_scroller"><?php echo $this->lang['core']['templates']['register']['register_tos']; ?></a>
+                            <?php echo $this->lang['core']['templates']['register']['register_tos_part2']; ?>
+                            <a href="#" class="highlight" data-area="#privacy_scroller"><?php echo $this->lang['core']['templates']['register']['register_pp']; ?></a>.
 						</label>
 						
-						<button type="submit" class="btn btn-info btn-block">Crate Free Account</button>
+						<button type="submit" class="btn btn-info btn-block"><?php echo $this->lang['core']['templates']['register']['register_submit']; ?></button>
 					</fieldset>
 					<input type="hidden" name="signup" value="<?php echo Security::csrfGenerate('signup'); ?>">
 					<input type="hidden" name="action" value="register">

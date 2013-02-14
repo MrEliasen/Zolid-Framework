@@ -48,12 +48,12 @@ if(!defined('CORE_PATH')){
 			<div class="span4">
 				<h2><?php echo $this->lang['core']['templates']['index']['block1_title']; ?></h2>
 				<p><?php echo $this->lang['core']['templates']['index']['block1_body']; ?></p>
-				<p><a class="btn btn-info" href="#"><?php echo $this->lang['core']['templates']['index']['block1_button']; ?> &raquo;</a></p>
+				<p><a class="btn btn-info" href="https://github.com/MrEliasen/Zolid-Framework/archive/master.zip"><?php echo $this->lang['core']['templates']['index']['block1_button']; ?> &raquo;</a></p>
 			</div>
 			<div class="span4">
 				<h2><?php echo $this->lang['core']['templates']['index']['block2_title']; ?></h2>
 				<p><?php echo $this->lang['core']['templates']['index']['block2_body']; ?></p>
-				<p><a class="btn btn-info" href="#"><?php echo $this->lang['core']['templates']['index']['block2_button']; ?> &raquo;</a></p>
+				<p><a class="btn btn-info" href="https://github.com/MrEliasen/Zolid-Framework"><?php echo $this->lang['core']['templates']['index']['block2_button']; ?> &raquo;</a></p>
 			</div>
 			<div class="span4">
 				<h2><?php echo $this->lang['core']['templates']['index']['block3_title']; ?></h2>
