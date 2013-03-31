@@ -348,7 +348,7 @@ class User extends Core
 			$sql_where = 'password = ? AND email_hash = ?';
 			$sql_data = array(
 							hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['password'], $this->config['global_key']),
-							hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['email'], $this->config['global_key'] )
+							hash_hmac('sha512', $this->config['global_salt'] . strtolower($_REQUEST['email']), $this->config['global_key'] )
 						);
 		}
 		
@@ -394,9 +394,11 @@ class User extends Core
 			$this->logged_in = true;
             
 			// bind the session to the account they logged in with.
-			$stmt = $this->sql->prepare('UPDATE users, sessions SET users.session_id = :sesid, sessions.acc = :accid');
-			$stmt->bindValue(':sesid', session_id(), PDO::PARAM_STR);
-			$stmt->bindValue(':accid', $userData[0]['id'], PDO::PARAM_INT);
+			$stmt = $this->sql->prepare('UPDATE users, sessions SET users.session_id = :sesid, sessions.acc = :accid WHERE users.id = :accid2 AND sessions.id = :sesid2');
+            $stmt->bindValue(':sesid', session_id(), PDO::PARAM_STR);
+            $stmt->bindValue(':sesid2', session_id(), PDO::PARAM_STR);
+            $stmt->bindValue(':accid', $userData[0]['id'], PDO::PARAM_INT);
+            $stmt->bindValue(':accid2', $userData[0]['id'], PDO::PARAM_INT);
 			$stmt->execute();
 			$this->queries++;
 			$stmt->closeCursor();
@@ -627,7 +629,7 @@ class User extends Core
 		
 		$stmt = $this->sql->prepare('INSERT INTO users (email, email_hash, password, username, local, active_key, acc_key) VALUES ( :email, :emailhash, :pass, :username, :local, :actkey, :acckey)');
 		$stmt->bindValue(':pass', hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['password'], $this->config['global_key'] ), PDO::PARAM_STR);
-		$stmt->bindValue(':emailhash', hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['email'], $this->config['global_key'] ), PDO::PARAM_STR);
+		$stmt->bindValue(':emailhash', hash_hmac('sha512', $this->config['global_salt'] . strtolower($_REQUEST['email']), $this->config['global_key'] ), PDO::PARAM_STR);
 		$stmt->bindValue(':email', $encrypt_email, PDO::PARAM_STR);
 		$stmt->bindValue(':username', $_REQUEST['username'], PDO::PARAM_STR);
 		$stmt->bindValue(':local', Security::sanitize( $this->config['default_lang'], 'purestring'), PDO::PARAM_STR);
