@@ -14,7 +14,7 @@ if(!defined('CORE_PATH')){
 					echo Notifications::showNotification('login_1');
 					echo Notifications::showNotification('activate_1'); 
 				?>
-				<form action="<?php echo $this->__get('base_url'); ?>" method="post">
+				<form action="<?php echo $this->__get('base_url'); ?>/" method="post">
 					<fieldset>
 						<input type="text" name="email" placeholder="<?php echo $this->lang['core']['templates']['index']['login_email']; ?>" class="span3">
 						<br />

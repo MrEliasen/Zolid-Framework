@@ -1,15 +1,12 @@
 Options -Indexes
 RewriteEngine On
 
-#######################
-#  The Friendly URLs  #
-#######################
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-###################
-#  This is pages  #
-###################
+##############################
+#  This if for all the pages #
+##############################
 RewriteCond %{REQUEST_URI} !^/ajax
 RewriteRule ^([a-z0-9_-]+)$ index.php?p=$1 [L,QSA,NC]
 
@@ -17,11 +14,13 @@ RewriteRule ^([a-z0-9_-]+)$ index.php?p=$1 [L,QSA,NC]
 #  This is for ajax requests  #
 ###############################
 RewriteCond %{REQUEST_URI} ^/ajax
-RewriteRule ^ajax/(.+)$ index.php?p=ajax&a=$1 [L,QSA,NC]
+RewriteRule ^ajax(/*)$ index.php?p=404 [L,QSA,NC]
+RewriteRule ^ajax/(.*)$ index.php?p=ajax&a=$1 [L,QSA,NC]
 
 
 # ----------------------------------------------------------------------
 # Expires headers (for better cache control) - FROM HTML5 Boilerplate
+# You may change these as you see fit, or leave them as they are.
 # ----------------------------------------------------------------------
 <IfModule mod_expires.c>
   ExpiresActive on

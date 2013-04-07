@@ -1,0 +1,8 @@
+[v0.1.1] - 7th of April, 2013
+-----------------------------
+ - Fixed a bug when generating the base url on some systems.
+ - Fixed a bug where it returned 404 when installing.
+ - Fixed a bug with the password strength checker.
+ - Added "too short" functionality to the password strength checker.
+ - Changed the session checking hash from SHA256 to sha1.
+ - Fixed a bug which caused issues when trying to login.

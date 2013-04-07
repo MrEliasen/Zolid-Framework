@@ -1,6 +1,6 @@
 <?php
 define('CORE_PATH', dirname(__FILE__));
-define('ZF_VERSION', '0.1.0');
+define('ZF_VERSION', '0.1.1');
 
 $_REQUEST = array_merge($_POST, $_GET);
 
