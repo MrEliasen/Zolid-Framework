@@ -6,3 +6,4 @@
  - Added "too short" functionality to the password strength checker.
  - Changed the session checking hash from SHA256 to sha1.
  - Fixed a bug which caused issues when trying to login.
+ - Fixed a bug which made it possible to login without activating account.

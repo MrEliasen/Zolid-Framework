@@ -51,6 +51,7 @@ return array(
 				'login_error2' => 'both an email and password much be provided',
 				'login_error3' => 'The email does not appear to be valid, please try a different one.',
 				'login_error4' => 'The email and password combination did not match any records.',
+				'login_error5' => 'Your account has not been activated yet. Please check your email\'s spam folder in case the email ended up in there.',
 
 				'register_error1' => 'The CSRF protection system triggered, please try again.',
 				'register_error2' => 'Please fill out all the fields.',

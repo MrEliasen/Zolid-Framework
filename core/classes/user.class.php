@@ -354,7 +354,7 @@ class User extends Core
 		
 		// Check if the data matches the data we have on the user.
 		// Also if it does, we get the data we need to set the session.
-		$stmt = $this->sql->prepare('SELECT id, username, email, password, local, acc_key FROM users WHERE ' . $sql_where . ' LIMIT 1');
+		$stmt = $this->sql->prepare('SELECT id, username, email, password, local, acc_key, active_key FROM users WHERE ' . $sql_where . ' LIMIT 1');
 		$stmt->execute( $sql_data );
 		$this->queries++;
 		$userData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -363,6 +363,13 @@ class User extends Core
 		// check if the login info matched.
 		if( $stmt->rowCount() > 0 )
 		{
+			// Check if the account is activated yet.
+			if( !empty($userData[0]['active_key']) )
+			{
+				Notifications::setNotification('login_1', $this->lang['core']['classes']['user']['login_error5'], null, 'error');
+				return false;
+			}
+
 			// If it was a "cookie login" check if the data is correct.
 			if( !empty( $cookie ) )
 			{
