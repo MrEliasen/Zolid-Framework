@@ -100,6 +100,12 @@ class Template extends User
 			header('Location:' . $this->__get('base_url') . '/install');
 			exit;
 		}
+        
+        // protect certain pages from being accessed
+        if( $this->installed && $this->page == 'install' || in_array( $this->page, array('header', 'footer') ))
+		{
+			$this->page = 'index';
+		}
 		
 		//check if the requested page exists, and if it is not the 404 page
 		if( !file_exists(CORE_PATH . '/templates/'. $this->page . '.php') && $this->page != '404' )
