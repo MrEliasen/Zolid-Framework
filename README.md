@@ -18,7 +18,6 @@ The documentation is work in progress, so it is very limited still.
 * PHP 5.3+
 * MySQL 5.x
 * Apache mod_rewrite module ("pretty" urls).
-* Pear Mail (https://pear.php.net/manual/en/package.mail.mail.php)
 
 ##Installation
 1. Upload to your webhost
