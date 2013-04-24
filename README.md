@@ -2,7 +2,6 @@
 This framework is just a "simple" framework on which you can build your own sites. It comes with a build in simple user management system to handle registration, logins, logout and so on. There are several security features as well which you can use to help protect your site against SQL injections, XSS and CSRF among other things. The emails stored with this system are AES encrypted and the system uses SHA512 hashes of the emails when making a check against emails (like reset password).
 
 **Remember: this is a framework for you to build on, not a complete user system yet.**
-=======
 
 ##Demo
 [Click Here](http://zolidframe.zolidcore.com) to see a "vanialla" installation of the system.
