@@ -1,12 +1,14 @@
 <?php
 /**
- *  Zolid Framework
+ *  Zolid Framework - MIT licensed
+ *  https://github.com/MrEliasen/Zolid-Framework
  *
  *  Class which handles all security releated functions throughout the system.
  *
  *  @author     Mark Eliasen
+ *  @website    www.zolidweb.com
  *  @copyright  (c) 2013 - Mark Eliasen
- *  @version    0.0.1
+ *  @version    0.1.2
  */
 
 if( !defined('CORE_PATH') )
@@ -78,7 +80,7 @@ class Security
 
 		switch($type){
 			case 'string':
-				$data = $data; // not decided if I should do anything here, apart from just XSS further down.
+				$data = filter_var( $data, FILTER_SANITIZE_STRING );
 				break;
 				
 			case 'purestring':
@@ -86,23 +88,23 @@ class Security
 				break;
 				
 			case 'atoz':
-				$data = preg_replace( '/[^a-zA-Z]+/', '', addslashes( strip_tags( $data ) ) );
+				$data = preg_replace( '/[^a-zA-Z]+/', '', strip_tags( $data) );
 				break;
 				
 			case 'page':
-				$data = preg_replace( '/[^0-9a-zA-Z\-\.]+/', '', str_replace('.php', '', addslashes( strip_tags(  $data ) ) ) );
+				$data = preg_replace( '/[^0-9a-zA-Z\-\_\.]+/', '', str_replace('.php', '', strip_tags(  $data ) ) );
 				break;
 				
 			case 'integer':
-				$data = intval( preg_replace( '/[^0-9]+/', '', addslashes( $data ) ) );
+				$data =  filter_var( $data, FILTER_SANITIZE_NUMBER_INT );
 				break;
 			
 			case 'float':
-				$data = floatval( preg_replace( '/[^0-9\.]+/', '', addslashes( $data ) ) );
+				$data = filter_var( $data, FILTER_SANITIZE_NUMBER_INT, FILTER_FLAG_ALLOW_FRACTION );
 				break;
 				
 			case 'mixedint':
-				$data = preg_replace( '/[^0-9\,\.]+/', '', addslashes( $data ) );
+				$data = filter_var( $data, FILTER_SANITIZE_NUMBER_INT, FILTER_FLAG_ALLOW_FRACTION, FILTER_FLAG_ALLOW_THOUSAND );
 				break;
 				
 			case 'email':

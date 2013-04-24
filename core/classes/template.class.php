@@ -1,12 +1,14 @@
 <?php
 /**
- *  Zolid Framework
+ *  Zolid Framework - MIT licensed
+ *  https://github.com/MrEliasen/Zolid-Framework
  *
  *  A class which handles the displaying and generation of the website pages.
  *
  *  @author     Mark Eliasen
+ *  @website    www.zolidweb.com
  *  @copyright  (c) 2013 - Mark Eliasen
- *  @version    0.0.1
+ *  @version    0.1.2
  */
 
 if( !defined('CORE_PATH') )
@@ -31,9 +33,6 @@ class Template extends User
 
 		if( !defined('IN_SYSTEM') )
 		{
-			// Find the page the user requested, if none, it must be the dashboard
-			$this->page = Security::sanitize( ( !empty($_GET['p']) ? $_GET['p'] : 'index'), 'page');
-			
 			// Check if ´the request was not for a page, but was for some data (like from AJAX) or an action. If not, show page as normal.
 			switch( $this->page )
 			{
@@ -97,7 +96,7 @@ class Template extends User
 		// Check if the system is installed, else redirect them to the installer
 		if( !$this->installed && $this->page != 'install' )
 		{
-			header('Location:' . $this->__get('base_url') . '/install');
+            header('Location:' . $this->__get('base_url') . '/install');
 			exit;
 		}
         
@@ -199,9 +198,9 @@ class Template extends User
             exit;
         }
         
-        if( empty($_POST['sqlhost']) || empty($_POST['sqlport']) || empty($_POST['sqldb']) || empty($_POST['sqluser']) || !isset($_POST['sqlpass'])
-            || empty($_POST['site_name']) || empty($_POST['site_mail']) || empty($_POST['site_zone']) || empty($_POST['site_lang'])
-            || empty($_POST['write_perm'])
+        if( empty($_POST['sqlhost']) || empty($_POST['sqlport']) || empty($_POST['sqldb']) || empty($_POST['sqluser'])
+            || !isset($_POST['sqlpass']) || empty($_POST['site_name']) || empty($_POST['site_mail']) || empty($_POST['site_zone'])
+            || empty($_POST['site_lang']) || empty($_POST['write_perm']) || empty($_POST['site_url'])
           )
         {
             echo json_encode( array('status' => false, 'message' => 'Please fill out all the fields.') );
@@ -235,6 +234,7 @@ class Template extends User
         
         /* Safe the settings to the config file. */ 
         $sitename 		= Security::sanitize( $_POST['site_name'], 'purestring');
+        $sitebaseurl    = Security::sanitize( $_POST['site_url'], 'purestring');
         $siteemail 		= Security::sanitize( $_POST['site_mail'], 'purestring');
         $sitetimezone 	= Security::sanitize( $_POST['site_zone'], 'purestring');
         $sitelang 	    = Security::sanitize( $_POST['site_lang'], 'purestring');
@@ -255,6 +255,7 @@ class Template extends User
 $config = array(
     \'site_name\'=>\'' . $sitename . '\',
     \'site_email\'=>\'' . $siteemail . '\',
+    \'base_url\'=>\'' . $sitebaseurl . '\',
     \'timezone\'=>\'' . $sitetimezone . '\',
     \'default_lang\'=>\'' . $sitelang . '\',
     \'sql\'=>array(
@@ -330,6 +331,9 @@ $config = array(
             echo json_encode( array('status'=>false, 'message'=>'Unable to create the nessary tables in the database.') );
             exit; 
         }
+        
+        // try to delete the install file, just in case.
+        @unlink( CORE_PATH . '/templates/install.php');
         
         echo json_encode( array('status'=>true, 'message'=>'Installation completed.') );
         exit;

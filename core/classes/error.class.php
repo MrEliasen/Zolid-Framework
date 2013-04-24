@@ -1,12 +1,14 @@
 <?php
 /**
- *  Zolid Framework
+ *  Zolid Framework - MIT licensed
+ *  https://github.com/MrEliasen/Zolid-Framework
  *
  *  A class which handles error logging
  *
  *  @author     Mark Eliasen
+ *  @website    www.zolidweb.com
  *  @copyright  (c) 2013 - Mark Eliasen
- *  @version    0.0.1
+ *  @version    0.1.2
  */
 
 if( !defined('CORE_PATH') )

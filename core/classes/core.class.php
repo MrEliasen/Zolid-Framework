@@ -1,12 +1,14 @@
 <?php
 /**
- *  Zolid Framework
+ *  Zolid Framework - MIT licensed
+ *  https://github.com/MrEliasen/Zolid-Framework
  *
  *  A class which handles sessions and database connection(s).
  *
  *  @author     Mark Eliasen
+ *  @website    www.zolidweb.com
  *  @copyright  (c) 2013 - Mark Eliasen
- *  @version    0.0.1
+ *  @version    0.1.2
  */
 
 if( !defined('CORE_PATH') )
@@ -33,59 +35,21 @@ class Core
     {
         // Find the page the user requested, if none, it must be the dashboard
         $this->page = Security::sanitize( ( !empty($_GET['p']) ? $_GET['p'] : 'index'), 'page');
-            
-        /*
-         * Build base url to the system
-         * * * * * * * * * * * * * * * */
-        // Are we using https
-        $url_scheme = ( ( isset( $_SERVER['HTTPS'] ) && strtolower( $_SERVER['HTTPS'] ) == 'on') || $_SERVER['SERVER_PORT'] == 443 ? 'https://' : 'http://' );
-        $baseurl = $_SERVER['HTTP_HOST'];
-        if( $_SERVER['SERVER_PORT'] != 80 ) {
-            $baseurl = str_replace(':' . $_SERVER['SERVER_PORT'], '', $baseurl); // remove port from HTTP_HOST if https
-        }
         
-        // is it installed or running from a sub directory
-        $path = dirname(__FILE__);
-        $subdir = str_replace( array('/core/classes','\core\classes'), array('', ''), $path );
-
-        // Plesk, cPanel or maybe Windows server ?
-        switch( true )
-        {
-             // Plesk
-            case ( strpos($subdir, 'httpdocs') !== false ):
-                $subdir = substr( $subdir, strpos( $subdir, '/httpdocs' ) + 9 );
-                break;
-                
-            // cPanel
-            case ( strpos($subdir, 'public_html') !== false ):
-                $subdir = substr( $subdir, strpos( $subdir, '/public_html' ) + 12 );
-                break;
-                
-            // Windows
-            case ( strpos($subdir, 'inetpub') !== false ):
-                $subdir = substr( $subdir, strpos( $subdir, '\httpdocs' ) + 9 );
-                break;  
-              
-            // WAMP
-            case ( strpos($subdir, 'wamp') !== false ):
-                $subdir = substr( $subdir, strpos( $subdir, 'www' ) + 3 );
-                break;
-        }
         
-        // The finished url
-        $this->base_url = $url_scheme . $baseurl . str_replace('\\', '/', $subdir);
-
         if( !filesize( CORE_PATH . '/config.php' ) )
         {
+            $this->generateBaseUrl();
             $this->site_name = 'Zolid Framework';
             return false;
         }
         
         try
-        {           
-            require_once( CORE_PATH . '/config.php' );
+        {
+            @require_once( CORE_PATH . '/config.php' );
             $this->config = $config;
             $this->site_name = ( !empty($config['site_name']) ? $config['site_name'] : 'Zolid Framework' );
+            $this->generateBaseUrl( $config['base_url'] );
             date_default_timezone_set( $config['timezone'] );
             
             unset($config);
@@ -108,6 +72,37 @@ class Core
         {
             $this->lang = include( CORE_PATH . '/locale/' . Security::sanitize($this->config['default_lang'], 'purestring') . '.php' );
         }
+    }
+    
+    /**
+     * Generates the base url if non is provided.
+     * @param  string $baseUrl the provided (if any) url.
+     * @return boolean returns true when the function completes.
+     */
+    private function generateBaseUrl( $baseUrl = '' )
+    {
+        if( empty($baseUrl) )
+        {
+            $https = ( isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : false );
+            $baseUrl= ( !$https || strtolower($https) !== 'on' ? 'http://' : 'https://' );
+            $baseUrl .= $_SERVER['HTTP_HOST'];
+            
+            if( $_SERVER['SERVER_PORT'] !== 80 )
+            {
+                $baseUrl = str_replace(':' . $_SERVER['SERVER_PORT'], '', $baseUrl);
+            }
+            
+            $baseUrl .= ( $_SERVER['SERVER_PORT'] == 80 || ( $https !== false || strtolower($https) == 'on' ) ? '' : ':' . $_SERVER['SERVER_PORT'] );
+            $baseUrl .= $_SERVER['PHP_SELF'];
+            
+            $baseUrl = explode('/', $baseUrl);
+            unset( $baseUrl[ count($baseUrl) -1 ] );
+            $baseUrl = implode('/', $baseUrl);
+        }
+        
+        // The finished url
+        $this->base_url = $baseUrl;
+        return true;
     }
     
     /**

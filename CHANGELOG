@@ -1,4 +1,12 @@
-[v0.1.1] - 7th of April, 2013
+[v 0.1.2] - 24th of April, 2013
+-----------------------------
+ - The user can now choose to login with either their email or username.
+ - Account recovery now works with both the users username and email.
+ - Fixed the way the base url is generated.
+ - Removed almost all the regex from the security class, replaced with filter_var.
+
+ 
+[v 0.1.1] - 7th of April, 2013
 -----------------------------
  - Fixed a bug when generating the base url on some systems.
  - Fixed a bug where it returned 404 when installing.

@@ -1,7 +1,3 @@
---
--- Struktur-dump for tabellen `sessions`
---
-
 CREATE TABLE IF NOT EXISTS `sessions` (
   `id` char(64) NOT NULL DEFAULT '',
   `data` text NOT NULL,
@@ -12,12 +8,6 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   `acc` int(10) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Struktur-dump for tabellen `users`
---
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

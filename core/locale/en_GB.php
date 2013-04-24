@@ -96,7 +96,7 @@ return array(
 			),
 			'index' => array(
 				'login_title' => 'Account Login',
-				'login_email' => 'E-mail',
+				'login_email' => 'E-mail / Username',
 				'login_password' => 'Password',
 				'login_remember' => 'Remember login information',
 				'login_submit' => 'Log me in!',
@@ -117,8 +117,8 @@ return array(
 			),
 			'recover' => array(
 				'recover_title' => 'Recover Account',
-				'recover_text' => 'Did you forget your account password? No problem at all!<br />Just type the e-mail your used to sign up with in the fields below, and a password reset link will be sent to you.',
-				'recover_email' => 'E-mail',
+				'recover_text' => 'Did you forget your account password? No problem at all!<br />Just type the e-mail or username of your account in the field below, and a password reset link will be sent to the email associated with the account.',
+				'recover_email' => 'E-mail or username',
 				'recover_submit' => 'Reset Password!'
 			),
 			'register' => array(

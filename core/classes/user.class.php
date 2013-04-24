@@ -1,12 +1,14 @@
 <?php
 /**
- *  Zolid Framework
+ *  Zolid Framework - MIT licensed
+ *  https://github.com/MrEliasen/Zolid-Framework
  *
  *  A class which handles all account/user related functions like login and registrations.
  *
  *  @author     Mark Eliasen
+ *  @website    www.zolidweb.com
  *  @copyright  (c) 2013 - Mark Eliasen
- *  @version    0.0.1
+ *  @version    0.1.2
  */
 
 if( !defined('CORE_PATH') )
@@ -100,7 +102,7 @@ class User extends Core
 		}
 
 		// Sanitize the email address
-		$_POST['email'] = Security::sanitize( $_POST['email'], 'email' );
+		$_POST['email'] = Security::sanitize( $_POST['email'], 'purestring' );
 
 		// Check the email if it is valid or not. Display error is not valid.
 		if( !$this->validateEmail( $_POST['email'] ) )
@@ -110,9 +112,19 @@ class User extends Core
 		}
 
 		// Create the email hash which we need to check against the database to see if any account is found using that email.
-		$_POST['email'] = hash_hmac('sha512', $this->config['global_salt'] . $_POST['email'], $this->config['global_key'] );
+        if( filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) )
+        {
+            //they try to recover using their email
+            $_POST['email'] = hash_hmac('sha512', $this->config['global_salt'] . $_POST['email'], $this->config['global_key'] );
+            $query_where = 'email_hash';
+        }
+        else
+        {
+            //they try to recover using their username
+            $query_where = 'username';
+        }
 
-		$stmt = $this->sql->prepare('SELECT email FROM users WHERE email_hash = ?');
+		$stmt = $this->sql->prepare('SELECT email FROM users WHERE ' . $query_where . ' = ?');
 		$stmt->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
 		$stmt->execute();
 		$this->queries++;
@@ -329,13 +341,6 @@ class User extends Core
 			return false;
         }
 
-		// Check if the email is valid
-		if( empty( $cookie ) && !$this->validateEmail( $_REQUEST['email'] ) )
-		{
-			Notifications::setNotification('login_1', $this->lang['core']['classes']['user']['login_error3'], null, 'error');
-			return false;
-		}
-
 		// Cookie login
 		if( !empty( $cookie ) )
 		{
@@ -345,11 +350,24 @@ class User extends Core
 		else
 		// form login
 		{
-			$sql_where = 'password = ? AND email_hash = ?';
-			$sql_data = array(
-							hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['password'], $this->config['global_key']),
-							hash_hmac('sha512', $this->config['global_salt'] . strtolower($_REQUEST['email']), $this->config['global_key'] )
-						);
+            //if the user if trying to login using an email:
+            if( filter_var($_REQUEST['email'], FILTER_VALIDATE_EMAIL) )
+            {
+                $sql_where = 'password = ? AND email_hash = ?';
+                $sql_data = array(
+                                hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['password'], $this->config['global_key']),
+                                hash_hmac('sha512', $this->config['global_salt'] . strtolower($_REQUEST['email']), $this->config['global_key'] )
+                            );
+            }
+            else
+            {
+                //else treat it like a username login attempt:
+                $sql_where = 'password = ? AND username = ?';
+                $sql_data = array(
+                                hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['password'], $this->config['global_key']),
+                                Security::sanitize($_REQUEST['email'], 'purestring')
+                            );
+            }
 		}
 		
 		// Check if the data matches the data we have on the user.

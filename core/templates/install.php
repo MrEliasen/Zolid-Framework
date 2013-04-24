@@ -1,14 +1,4 @@
-<?php
-/**
- *  Zolid Framework
- *
- *  Framework installer.
- *
- *  @author     Mark Eliasen
- *  @copyright  (c) 2013 - Mark Eliasen
- *  @version    0.0.1
- */
- 
+<?php 
 $timezones = array(
     'Pacific/Midway'       => "(GMT-11:00) Midway Island",
     'US/Samoa'             => "(GMT-11:00) Samoa",
@@ -176,6 +166,14 @@ $timezones = array(
 						<h4>Site Settings</h4>
                         <div class="hr"></div>
                         
+						<div class="control-group">
+							<label class="control-label" for="site_url">Base Url</label>
+							<div class="controls">
+								<input class="input-xxlarge" type="text" id="site_url" name="site_url" value="<?php echo $this->__get('base_url'); ?>">
+                                <span class="help-block">This is the full url to where the system root is (the index.php).<br>
+                                <strong>Important!</strong>: the url should <strong>NOT</strong> end with a trailing slash ("/" without the quotes).</span>
+							</div>
+						</div>
 						<div class="control-group">
 							<label class="control-label" for="site_name">Site Name</label>
 							<div class="controls">
