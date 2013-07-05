@@ -133,7 +133,7 @@ class User extends Core
 		$stmt->closeCursor();
 
 		// If no account was found using the email above, display error message.
-		if( $stmt->rowCount() > 0 )
+		if( empty($data) )
 		{
 			Notifications::setNotification('recover_1', $this->lang['core']['classes']['user']['recover_err3'] );
 			return false;
@@ -756,7 +756,7 @@ class User extends Core
 			}
 
 			// Check if the user accepted the terms and policies
-			if( $_REQUEST['password'] != $_REQUEST['password2'] )
+			if( $_REQUEST['acc_pass'] != $_REQUEST['acc_pass2'] )
 			{
 				Notifications::setNotification('settings_1', $this->lang['core']['classes']['user']['settings_error7'], null, 'error');
 				return false;
@@ -781,7 +781,7 @@ class User extends Core
 
 		if( isset($addpasword) )
 		{
-			$data[] = hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['password'], $this->config['global_key'] );
+			$data[] = hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['acc_pass'], $this->config['global_key'] );
 		}
 
 		$data[] = $encrypt_email;

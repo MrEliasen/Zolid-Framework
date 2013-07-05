@@ -10,7 +10,7 @@
  */
  
 define('CORE_PATH', dirname(__FILE__));
-define('ZF_VERSION', '0.1.2');
+define('ZF_VERSION', '0.1.3');
 
 $_REQUEST = array_merge($_POST, $_GET);
 

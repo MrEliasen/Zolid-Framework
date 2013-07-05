@@ -1,3 +1,11 @@
+[v 0.1.3] - 5th of July, 2013
+-----------------------------
+ - Fixed the issue with CSRF tokens being invalid.
+ - Fixed an issue with resetting password.
+ - Fixed an issue when changing password on settings page.
+ - Fixed an issue when installing the framework.
+
+ 
 [v 0.1.2] - 24th of April, 2013
 -----------------------------
  - The user can now choose to login with either their email or username.

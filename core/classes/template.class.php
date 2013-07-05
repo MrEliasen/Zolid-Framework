@@ -112,6 +112,12 @@ class Template extends User
 			// If the page is not found show the 404 page.
 			$this->page = '404';
 		}
+        
+        // fix for the CSRF token invalidation
+        if( $this->page == '404' && !empty($_SERVER['REQUEST_URI']) && $_SERVER['REQUEST_URI'] == '/favicon.ico' )
+        {
+            return false;
+        }
 		
 		//show the page to the user
 		ob_start();
@@ -242,13 +248,13 @@ class Template extends User
         $sql_host 		= Security::sanitize( $_POST['sqlhost'], 'purestring');
         $sql_port 		= Security::sanitize( $_POST['sqlport'], 'integer');
         $sql_user 		= Security::sanitize( $_POST['sqluser'], 'purestring');
-        $sql_pass 		= Security::sanitize( $_POST['sqlpass'], 'purestring');
+        $sql_pass 		= Security::sanitize( $_POST['sqlpass'], 'string');
         $sql_db 		= Security::sanitize( $_POST['sqldb'], 'purestring');
         
         $smtp_host 		= Security::sanitize( ( !empty($_POST['smtp_host']) ? $_POST['smtp_host'] : '' ), 'purestring');
         $smtp_port 		= Security::sanitize( ( !empty($_POST['smtp_port']) ? $_POST['smtp_port'] : '' ), 'integer');
         $smtp_mail 		= Security::sanitize( ( !empty($_POST['smtp_user']) ? $_POST['smtp_user'] : '' ), 'purestring');
-        $smtp_pass 		= Security::sanitize( ( !empty($_POST['smtp_pass']) ? $_POST['smtp_pass'] : '' ), 'purestring');
+        $smtp_pass 		= Security::sanitize( ( !empty($_POST['smtp_pass']) ? $_POST['smtp_pass'] : '' ), 'string');
         
         $config = 
 '<?php
