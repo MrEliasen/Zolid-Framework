@@ -24,7 +24,7 @@ class Security
      * @param  string $key the identifier for the  $_REQUEST and $_SESSION value to compare.
      * @return boolean      true on valid token, false on invalid or missing token.
      */
-    public static function csrfCheck($key)
+    public static function csrfCheck($key, $static = false )
     {
 		// Check if the token exists for the current session
         if( empty( $_SESSION['csrf'][$key] ) ){
@@ -42,8 +42,10 @@ class Security
 		}
 		
 		//To avoid the token to be used again.
-		unset( $_SESSION['csrf'][$key] );
-
+        if( !$static )
+        {
+            unset( $_SESSION['csrf'][$key] );   
+        }
         return true;
     }
 	
@@ -54,7 +56,7 @@ class Security
      * @return string      the csrf token. Add this token to a GET or POST value with the same key as the one supplied here.
      */
     public static function csrfGenerate($key)
-    {		
+    {
 		$token = sha1( time() . $_SERVER['REMOTE_ADDR'] . Security::randomGenerator(15) );
         $_SESSION['csrf'][$key] = $token;
 
@@ -141,7 +143,7 @@ class Security
         }
         else
         {
-            $options = 'aei^*@£bcdf1234ghjklB{]}CDFouyGHJK[LMmn4567pq$+|,.AEI-_rstvxzNPQRSTV890XZ!#%OUY/()=?';
+            $options = 'aei^*@bcdf1234ghjklB{]}CDFouyGHJK[LMmn4567pq$+|,.AEI-_rstvxzNPQRSTV890XZ!#%OUY/()=?';
         }
 
 		$key = '';

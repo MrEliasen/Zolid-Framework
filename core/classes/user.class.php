@@ -18,7 +18,7 @@ if( !defined('CORE_PATH') )
 
 class User extends Core
 {
-    protected $logged_in = false;
+    private $permissions = array('loggedin' => false);
 
     /**
      * user class construct function. initiates the session check(s) and account action requests
@@ -30,7 +30,7 @@ class User extends Core
 
         // Check if a login request was sent to the system
         $cookie = $this->readRememberCookie();
-        if( !$this->logged_in && !empty( $cookie ) && empty($_REQUEST['action']) )
+        if( !$this->permission('loggedin') && !empty( $cookie ) && empty($_REQUEST['action']) )
         {
 			$this->login();
         }
@@ -139,10 +139,7 @@ class User extends Core
 			return false;
 		}
 
-		// Decrypt the email address so we can use it for sending the reset link to.
-		$key = Security::pbkdf2($this->config['AES']['level-1'], $this->config['AES']['salt'], 20000, 32);
-		$email = Security::decrypt($data[0]['email'], $key);
-		unset($key); // Unset the decryption key right after use for security purposes
+		$email = $this->decryptData($data[0]['email']);
 
 		// Add the password reset token to the account.
 		$token = hash_hmac('sha256', $this->config['global_salt'] . Security::randomGenerator(12) . $email, $this->config['global_key'] );
@@ -256,10 +253,7 @@ class User extends Core
 		$body = $this->render_email( $this->lang['core']['classes']['user']['recover2_mail'], $values );
 		$subject = $this->render_email( 'Reset Password - {{sitename}}' );
 		
-		// Decrypt the email address so we can use it for sending the reset link to.
-		$key = Security::pbkdf2($this->config['AES']['level-1'], $this->config['AES']['salt'], 20000, 32);
-		$email = Security::decrypt($userdata[0]['email'], $key);
-		unset($key); // Unset the decryption key right after use for security purposes
+		$email = $this->decryptData($userdata[0]['email']);
 		
 		if( $this->send_mail( $email, $subject, $body ) )
 		{
@@ -313,7 +307,7 @@ class User extends Core
 	 */
     private function login()
     {
-    	if( $this->logged_in )
+    	if( $this->permission('loggedin') )
     	{
     		return false;
     	}
@@ -353,7 +347,7 @@ class User extends Core
             //if the user if trying to login using an email:
             if( filter_var($_REQUEST['email'], FILTER_VALIDATE_EMAIL) )
             {
-                $sql_where = 'password = ? AND email_hash = ?';
+                $sql_where = 'u.password = ? AND u.email_hash = ?';
                 $sql_data = array(
                                 hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['password'], $this->config['global_key']),
                                 hash_hmac('sha512', $this->config['global_salt'] . strtolower($_REQUEST['email']), $this->config['global_key'] )
@@ -362,7 +356,7 @@ class User extends Core
             else
             {
                 //else treat it like a username login attempt:
-                $sql_where = 'password = ? AND username = ?';
+                $sql_where = 'u.password = ? AND u.username = ?';
                 $sql_data = array(
                                 hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['password'], $this->config['global_key']),
                                 Security::sanitize($_REQUEST['email'], 'purestring')
@@ -372,7 +366,7 @@ class User extends Core
 		
 		// Check if the data matches the data we have on the user.
 		// Also if it does, we get the data we need to set the session.
-		$stmt = $this->sql->prepare('SELECT id, username, email, password, local, acc_key, active_key FROM users WHERE ' . $sql_where . ' LIMIT 1');
+		$stmt = $this->sql->prepare('SELECT u.id, u.username, u.email, u.password, u.local, u.acc_key, u.active_key, g.id as gid, g.title, g.permissions FROM users as u LEFT JOIN groups as g ON g.id = u.group WHERE ' . $sql_where . ' LIMIT 1');
 		$stmt->execute( $sql_data );
 		$this->queries++;
 		$userData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -406,17 +400,21 @@ class User extends Core
 				}
 			}
 			
-			$key = Security::pbkdf2($this->config['AES']['level-1'], $this->config['AES']['salt'], 20000, 32);
-			$decrypted_email = Security::decrypt($userData[0]['email'], $key);
-			unset($key);
+			$decrypted_email = $this->decryptData($userData[0]['email']);
 			
 			// it did! set the session
 			$_SESSION['local'] = $userData[0]['local'];
 			$_SESSION['data']['uid'] = $userData[0]['id'];
 			$_SESSION['data']['username'] = $userData[0]['username'];
+			$_SESSION['data']['groupid'] = $userData[0]['gid'];
 			$_SESSION['data']['avatar'] = md5( strtolower( $decrypted_email ) ); //We use Gravatar for avatars, so we create and MD5 hash of the email.
 
-			$this->logged_in = true;
+			if( !empty($userData[0]['permissions']) )
+			{
+				$this->permissions = array_merge(json_decode($userData[0]['permissions'], true), $this->permissions);
+			}
+
+			$this->permissions['loggedin'] = true;
             
 			// bind the session to the account they logged in with.
 			$stmt = $this->sql->prepare('UPDATE users, sessions SET users.session_id = :sesid, sessions.acc = :accid WHERE users.id = :accid2 AND sessions.id = :sesid2');
@@ -434,7 +432,7 @@ class User extends Core
 			}
 			
 			//send them to the members panel
-			header('Location: ' . $this->__get('base_url') . '/dashboard' );
+			header('Location: ' . $this->generateURL('dashboard') );
 			exit;
 		}
 		else
@@ -513,7 +511,7 @@ class User extends Core
      */
     private function readRememberCookie()
     {
-    	if( $this->logged_in || empty( $_COOKIE[ sha1( $_SERVER['REMOTE_ADDR'] ) ] ) )
+    	if( $this->permission('loggedin') || empty( $_COOKIE[ sha1( $_SERVER['REMOTE_ADDR'] ) ] ) )
     	{
 			return '';
 		}
@@ -583,7 +581,7 @@ class User extends Core
 	 */
 	private function register()
 	{
-    	if( $this->logged_in )
+    	if( $this->permission('loggedin') )
     	{
     		return false;
     	}
@@ -595,7 +593,7 @@ class User extends Core
 		}
 
 		// Check CSRF token
-		if( Security::csrfCheck('signup') )
+		if( !Security::csrfCheck('signup') )
 		{
 			Notifications::setNotification('register_1', $this->lang['core']['classes']['user']['register_error1'], null, 'error');
 		}
@@ -646,18 +644,15 @@ class User extends Core
 			return false;
 		}
 		
-		$key = Security::pbkdf2($this->config['AES']['level-1'], $this->config['AES']['salt'], 20000, 32);
-		$encrypt_email = Security::encrypt($_REQUEST['email'], $key);
-		unset($key);
+		$encrypt_email = $this->encryptData($_REQUEST['email']);
 		
 		$activation_key = md5( Security::randomGenerator(12) . $_REQUEST['email']);
 		
-		$stmt = $this->sql->prepare('INSERT INTO users (email, email_hash, password, username, local, active_key, acc_key) VALUES ( :email, :emailhash, :pass, :username, :local, :actkey, :acckey)');
+		$stmt = $this->sql->prepare('INSERT INTO users (email, email_hash, password, username, active_key, acc_key) VALUES ( :email, :emailhash, :pass, :username, :actkey, :acckey)');
 		$stmt->bindValue(':pass', hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['password'], $this->config['global_key'] ), PDO::PARAM_STR);
 		$stmt->bindValue(':emailhash', hash_hmac('sha512', $this->config['global_salt'] . strtolower($_REQUEST['email']), $this->config['global_key'] ), PDO::PARAM_STR);
 		$stmt->bindValue(':email', $encrypt_email, PDO::PARAM_STR);
 		$stmt->bindValue(':username', $_REQUEST['username'], PDO::PARAM_STR);
-		$stmt->bindValue(':local', Security::sanitize( $this->config['default_lang'], 'purestring'), PDO::PARAM_STR);
 		$stmt->bindValue(':actkey', $activation_key, PDO::PARAM_STR);
 		$stmt->bindValue(':acckey', Security::randomGenerator(12), PDO::PARAM_STR);
 		$stmt->execute();
@@ -670,7 +665,7 @@ class User extends Core
 		{
 			// Create the email we need to send to the user¨.
 			$values = array(
-				'activateurl' => $this->__get('base_url') . '?action=activate&key=' . $activation_key,
+				'activateurl' => $this->generateURL('login', array('action'=>'activate', 'key'=>$activation_key)),
 				'username' => $_REQUEST['username']
 			);
 
@@ -702,7 +697,7 @@ class User extends Core
 	 */
 	private function settings()
 	{
-    	if( !$this->logged_in )
+    	if( !$this->permission('loggedin') )
     	{
     		return false;
     	}
@@ -735,9 +730,7 @@ class User extends Core
 			return false;
 		}
 	
-		$key = Security::pbkdf2($this->config['AES']['level-1'], $this->config['AES']['salt'], 20000, 32);
-		$encrypt_email = Security::encrypt($_REQUEST['acc_email'], $key);
-		unset($key);
+		$encrypt_email = $this->encryptData($_REQUEST['acc_email']);
 
 		if( !empty( $_REQUEST['acc_pass'] ) )
 		{
@@ -769,8 +762,6 @@ class User extends Core
 						users 
 					SET 
 						' . ( isset($addpasword) ? 'password = ?,' : '' ) .'
-						' . ( !empty($_REQUEST['mail_admins']) ? 'mail_admins = 1,' : 'mail_admins = 0,' ) .'
-						' . ( !empty($_REQUEST['mail_users']) ? 'mail_members = 1,' : 'mail_members = 0,' ) .'
 						email = ?, 
 						email_hash = ?, 
 						local = ?
@@ -818,12 +809,12 @@ class User extends Core
 	public function getAccProfile($id = 0)
 	{
 		// If no ID is provided, we must assume we are retriving the data for the same account who is viewing.
-		if( empty( $id ) && $this->logged_in )
+		if( empty( $id ) && $this->permission('loggedin') )
 		{
 			$id = $_SESSION['data']['uid'];
 		}
 
-		$stmt = $this->sql->prepare('SELECT username, email, local, mail_admins, mail_members FROM users WHERE id = :userid');
+		$stmt = $this->sql->prepare('SELECT username, email, local, groups.title FROM users LEFT JOIN groups on groups.id = users.group WHERE users.id = :userid');
 		$stmt->bindValue(':userid', $id, PDO::PARAM_INT);
 		$stmt->execute();
 		$this->queries++;
@@ -832,23 +823,11 @@ class User extends Core
 		$stmt->closeCursor();
 
 		// If no profile/account was found, we need to generate some placeholder as it will save us checking for empty() many times later.
-		if( $stmt->rowCount() < 1)
-		{
-			$profile = array(
-				'username' => '',
-				'email' => '',
-				'name' => '',
-				'local' => '',
-				'country' => ''
-			);
-		}
-		else
-		{
+		if( !empty($profile[0]) )
+        {
 			// decrypt the email address and because the FetchAll returns the result as an array in [0], bind that to the $profile variable so we can return it correctly.
 			$profile = $profile[0];
-			$key = Security::pbkdf2($this->config['AES']['level-1'], $this->config['AES']['salt'], 20000, 32);
-			$profile['email'] = Security::decrypt( $profile['email'], $key );
-			unset($key);
+			$profile['email'] = $this->decryptData($profile['email']);
 			
 		}
 
@@ -863,7 +842,7 @@ class User extends Core
 	 */
 	protected function validateEmail($email)
 	{
-		if( preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/', strtolower( $email ) ) )
+		if( filter_var(strtolower($email), FILTER_VALIDATE_EMAIL))
 		{
 			return true;
 		}
@@ -890,7 +869,7 @@ class User extends Core
 		{
 			return true;
 		}
-		else if( $stmt->rowCount() > 0 && $this->logged_in )
+		else if( $stmt->rowCount() > 0 && $this->permission('loggedin') )
 		{
 			if($data[0]['id'] == $_SESSION['data']['uid'])
 			{
@@ -932,7 +911,7 @@ class User extends Core
 		// Check if the session is even set
 		if( empty($_SESSION['data']['uid']) )
 		{
-			return $this->logged_in = false;
+			return $this->permissions['loggedin'] = false;
 		}
 
 		// Fetch the session data from the database, to crosscheck with the session
@@ -944,12 +923,17 @@ class User extends Core
 										s.acc, 
 										u.id,
 										u.session_id,
-										u.username
+										u.username,
+										g.permissions,
+										g.id as gid
 									FROM 
 										sessions as s 
 									INNER JOIN 
 										users as u 
-										ON u.id = s.acc 
+										ON u.id = s.acc
+									LEFT JOIN
+										groups as g
+										ON g.id = u.group 
 									WHERE 
 										s.acc = ? 
 										AND 
@@ -975,9 +959,14 @@ class User extends Core
 				return false;
 			}
 
+			$_SESSION['data']['groupid'] = $session_data[0]['gid'];
 			$_SESSION['data']['username'] = $session_data[0]['username'];
 			$_SESSION['data']['uid'] = $session_data[0]['id'];
-			$this->logged_in = true;
+			$this->permissions['loggedin'] = true;
+            if( !empty($session_data[0]['permissions']) )
+            {
+                $this->permissions = array_merge(json_decode($session_data[0]['permissions'], true), $this->permissions);
+            }
 		}
 		else
 		{
@@ -998,7 +987,7 @@ class User extends Core
 		// Global values which can be used in all emails
 		$values = array(
 			'sitelink' => $this->__get('base_url'),
-			'sitename' => $this->__get('site_name')
+			'sitename' => $this->config['site_name']
 		);
 
 		// Check if any custom values, like password reset link, has been added. If so, add them to the values array.
@@ -1075,5 +1064,33 @@ class User extends Core
 				return true;
 			}
         }
+	}
+    
+    protected function permission( $section = 'loggedin' )
+    {
+        if( !empty($this->permissions[ $section ]) )
+        {
+            return $this->permissions[ $section ];
+        }
+        
+        return false;
+    }
+
+	protected function encryptData( $data )
+	{
+		$key = Security::pbkdf2($this->config['AES']['level-1'], $this->config['AES']['salt'], 20000, 32);
+		$data = Security::encrypt($data, $key);
+		unset($key);
+
+		return $data;
+	}
+
+	protected function decryptData( $data )
+	{
+		$key = Security::pbkdf2($this->config['AES']['level-1'], $this->config['AES']['salt'], 20000, 32);
+		$data = Security::decrypt($data, $key);
+		unset($key);
+
+		return $data;
 	}
 }

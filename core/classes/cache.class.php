@@ -24,16 +24,16 @@ class Cache
 	 * @param  string $name the unique cache identifier aka name
 	 * @return string       the cached content.
 	 */
-	public static function showCache($name)
+	public static function showCache( $name )
 	{
 		$dir = CORE_PATH . '/cache/';
 		$from_file = $name . '.cache';
 		
-		if( file_exists($dir.$from_file) )
+		if( file_exists($dir . $from_file) )
 		{
-			if( filesize($dir.$from_file) > 0 )
+			if( filesize($dir . $from_file) > 0 )
 			{
-				if( filemtime($dir.$from_file) > time()-600 )
+				if( filemtime($dir . $from_file) > time() - 600 )
 				{
 					ob_start();
 					include($dir . $from_file);
@@ -53,7 +53,7 @@ class Cache
 	 * @param mised $output the output you wish to cache
 	 * @param string $name   the name of the cache file, used later for retrieval
 	 */
-	public static function addCache($output, $name)
+	public static function addCache( $output, $name )
 	{
 		$dir = CORE_PATH . '/cache/';
 		$to_file = $name . '.cache';

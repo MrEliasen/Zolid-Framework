@@ -1,3 +1,19 @@
+[v 0.1.4] - 11th of August, 2013
+-----------------------------
+ - Updated email validation function from REGEX to Filter_var.
+ - Updated the installer to reflect the new changes.
+ - Updated the way the framework settings are stored.
+ - Updated the language files to only have the internals of the system and not the pages.
+ - Updated Bootstrap to 3.0 RC1.
+ - Fixed a bug with the installer, it now properly redirect the user to the front page.
+ - Fixed a bug with the session handlingm, causing session data to not get written to the database.
+ - Added the ability to reuse CSRF tokens.
+ - Added user groups and permissions.
+ - Added an admin control panel for users, groups and system settings.
+ - Added the ability to toggle friendly urls on and off.
+ - Optimised the SQL tables.
+ - Optimised the way you encrypt and decrypt data, you can just use 2 functions now.
+
 [v 0.1.3] - 5th of July, 2013
 -----------------------------
  - Fixed the issue with CSRF tokens being invalid.

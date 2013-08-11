@@ -7,41 +7,91 @@ if(!defined('CORE_PATH')){
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title><?php echo $this->__get('site_name'); ?> - v. <?php echo ZF_VERSION; ?></title>
+		<title><?php echo $this->config['site_name']; ?> - v. <?php echo ZF_VERSION; ?></title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="">
-		<meta name="author" content="">
+		<meta name="baseurl" content="<?php echo $this->base_url; ?>"><!-- Used in the zfscripts.js file -->
+		<meta name="usertoken" content="<?php echo Security::csrfGenerate('usertoken'); ?>"><!-- Used for misc. CSRF security checks -->
 
-		<!-- Global CSS -->
-		<link href="<?php echo $this->__get('base_url'); ?>/assets/css/bootstrap.min.css?v=222" rel="stylesheet" type="text/css">
-		<link href="<?php echo $this->__get('base_url'); ?>/assets/css/bootstrap-responsive.min.css?v=222" rel="stylesheet" type="text/css">
+		<!-- Bootstrap CSS -->
+		<link href="<?php echo $this->base_url; ?>/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen">
+		<link href="<?php echo $this->base_url; ?>/assets/css/bootstrap-glyphicons.css" rel="stylesheet" type="text/css" media="screen">
 		
 		<!-- Core Css -->
-		<link href="<?php echo $this->__get('base_url'); ?>/assets/css/zfstyle.css?v=001" rel="stylesheet" type="text/css">
+		<link href="<?php echo $this->base_url; ?>/assets/css/zfstyle.css" rel="stylesheet" type="text/css" media="screen">
 		
 		<!-- jQuery -->
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script type="text/javascript" src="<?php echo $this->__get('base_url'); ?>/assets/libs/jquery/jquery-1.9.0.min.js"><\/script>')</script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script type="text/javascript" src="<?php echo $this->base_url; ?>/assets/libs/jquery/jquery-1.9.0.min.js"><\/script>')</script>
 	</head>
 	<body>
 		<div id="alertMessage"></div>
 		
 		<div class="navbar navbar-fixed-top">
-			<div class="navbar-inner">
-				<div class="container">
-					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</a>
-					<a class="brand" href="<?php echo $this->__get('base_url'); ?>"><?php echo $this->__get('site_name'); ?></a>
-					<div class="nav-collapse collapse">
+			<div class="container">
+				<!-- .navbar-toggle is used as the toggle for collapsed navbar content -->
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
 
-						<?php echo $this->generateNavigation(); ?>
+				<a class="navbar-brand" href="<?php echo $this->base_url; ?>"><?php echo $this->config['site_name']; ?></a>
 
-					</div><!--/.nav-collapse -->
+				<div class="nav-collapse collapse navbar-responsive-collapse">
+					<?php
+						if( $this->installed )
+						{
+							if( !$this->permission('loggedin') )
+							{
+									echo '<ul class="nav navbar-nav">
+												<li class="' . $this->activepage('index') . '">
+													<a href="' . $this->__get('base_url') . '">Home</a>
+												</li>
+												<li class="' . $this->activepage('login') . '">
+													<a href="' . $this->generateURL('login') . '">Login</a>
+												</li>
+												<li class="' . $this->activepage('register') . '">
+													<a href="' . $this->generateURL('register') . '">Register</a>
+												</li>
+												<li class="' . $this->activepage('recover') . '">
+													<a href="' . $this->generateURL('recover') . '">Forgot Password</a>
+												</li>
+											</ul>';
+							}
+							else
+							{
+									echo '<ul class="nav navbar-nav">
+												<li class="' . $this->activepage('dashboard') . '">
+													<a href="' . $this->generateURL('dashboard') . '">Dashboard</a>
+												</li>
+											</ul>';
+								
+									echo '<ul class="nav navbar-nav pull-right">
+												<li class="divider-vertical"></li>
+												<li class="dropdown">
+													<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+														<img src="http://www.gravatar.com/avatar/' . $_SESSION['data']['avatar'] . '?size=22&amp;d=mm&amp;r=pg" alt="">
+														' . $_SESSION['data']['username'] . ' <b class="caret"></b>
+													</a>
+													<ul class="dropdown-menu">
+														<li><a href="' . $this->generateURL('settings') . '">Settings</a></li>
+														<li><a href="' . $this->generateURL(null, array('action'=>'logout', 'logout'=>Security::csrfGenerate('logout'))) . '">Logout</a></li>';
+												
+														if( $this->permission('admin') )
+														{
+															echo '<li class="divider"></li>
+																<li class="dropdown-header">Administration</li>
+																<li><a href="' . $this->generateURL('admincp') . '">Admin Panel</a></li>';
+														}
+														
+											echo '</ul>
+												</li>
+											</ul>';
+							}
+						}
+					?>
 				</div>
 			</div>
 		</div>
 
-		<div class="container">
+		<div id="contentbody">

@@ -1,11 +1,148 @@
-/*globals $ */
+/*
+ * jQuery hashchange event - v1.3 - 7/21/2010
+ * http://benalman.com/projects/jquery-hashchange-plugin/
+ * 
+ * Copyright (c) 2010 "Cowboy" Ben Alman
+ * Dual licensed under the MIT and GPL licenses.
+ * http://benalman.com/about/license/
+ */
+
+ // Just a small fix to make "hashchange" work with jQ 1.9+
+ var msie = false;
+if (navigator.appName == 'Microsoft Internet Explorer') {
+    msie = true;
+}
+(function($,e,b){var c="hashchange",h=document,f,g=$.event.special,i=h.documentMode,d="on"+c in e&&(i===b||i>7);function a(j){j=j||location.href;return"#"+j.replace(/^[^#]*#?(.*)$/,"$1")}$.fn[c]=function(j){return j?this.bind(c,j):this.trigger(c)};$.fn[c].delay=50;g[c]=$.extend(g[c],{setup:function(){if(d){return false}$(f.start)},teardown:function(){if(d){return false}$(f.stop)}});f=(function(){var j={},p,m=a(),k=function(q){return q},l=k,o=k;j.start=function(){p||n()};j.stop=function(){p&&clearTimeout(p);p=b};function n(){var r=a(),q=o(m);if(r!==m){l(m=r,q);$(e).trigger(c)}else{if(q!==m){location.href=location.href.replace(/#.*/,"")+q}}p=setTimeout(n,$.fn[c].delay)}msie&&!d&&(function(){var q,r;j.start=function(){if(!q){r=$.fn[c].src;r=r&&r+a();q=$('<iframe tabindex="-1" title="empty"/>').hide().one("load",function(){r||l(a());n()}).attr("src",r||"javascript:0").insertAfter("body")[0].contentWindow;h.onpropertychange=function(){try{if(event.propertyName==="title"){q.document.title=h.title}}catch(s){}}}};j.stop=k;o=function(){return a(q.location.href)};l=function(v,s){var u=q.document,t=$.fn[c].domain;if(v!==s){u.title=h.title;u.open();t&&u.write('<script>document.domain="'+t+'"<\/script>');u.close();q.location.hash=v}}})();return j})()})(jQuery,this);
+
+/*
+ *  Zolid Framework
+ */
+ $(function(){
+    //Load the tab which is selected in the address hash
+    $('a[href="'+window.location.hash.replace('/', '')+'"]').tab("show");
+    
+    //when you click a tab, change the address hash
+    $('a[data-toggle="tab"]').click(function(){
+        window.location.hash = '/'+$(this).attr('href').replace('#', '');
+    });
+});
+
+var baseUrl = $('meta[name=baseurl]').attr('content'),
+    userToken = $('meta[name=usertoken]').attr('content');
 
 $(document).ready(function () {
     "use strict";
+
+    /* 
+     * Hide notification when you click on it.
+     * * * * * * * * * * * * * * * * * * * * */
+    $('#alertMessage').click(function(){
+        hideNotification();
+    });
+
+    /* 
+     * Bootstrap Tooltips
+     * * * * * * * * * * * * * * * * * * * * */
+    $('*[data-toggle="tooltip"]').tooltip();
+
+    /* 
+     * Bootstrap Popovers
+     * * * * * * * * * * * * * * * * * * * * */
+    $('*[data-toggle="popover"]').popover({ html: true });
+    $(document).on("click", ".closepo", function(e){
+        $('*[data-toggle="popover"]').popover('hide');
+    });
+
+    /* 
+     * Bootstrap Modals
+     * * * * * * * * * * * * * * * * * * * * */
+    $(document).on("click", "*[data-toggle=modal]", function(e){
+        var button = $(this);
+        $.get(baseUrl + '/?p=ajax&a=modal_' + button.attr('data-loadmodal') + '&id=' + button.attr('data-id'), function(data) {
+            $('#modal').modal();
+            $('#modal').html(data);
+        }).success(function() {
+            $('input:text:visible:first').focus();
+            /* 
+             * Admin update account
+             * * * * * * * * * * * * * * * * * * * * */
+            if($('#accounts').length){
+                $('#saveaccchanges').click(function(e){
+                    $.ajax({
+                        url: baseUrl + '/?p=ajax&a=' + button.attr('data-action'),
+                        type: 'POST',
+                        dataType: "json",
+                        data: $('#modal form').serialize(),
+                        success: function(reply){
+                            if(reply.status){
+                                $('#modal').modal('hide');
+                                showNotification(reply.message, '', 'success');
+                                if(typeof reply.add !== 'undefined'){
+                                    button.closest('.tab-pane').find('tbody').append(reply.add);
+                                    $('*[data-toggle="popover"]').popover({ html: true });
+                                }
+                            }else{
+                                showNotification(reply.message, '', 'error');
+                            }
+                        }
+                    });
+                    e.preventDefault();
+                    return false;
+                });
+            }
+        });
+        e.preventDefault();
+    });
+
+    /* 
+     * Admin delete account
+     * * * * * * * * * * * * * * * * * * * * */
+    $(document).on("click", ".funcdelete", function(e){
+        var button = $(this);
+        $.ajax({
+            url: baseUrl + '/?p=ajax&a=' + button.attr('data-action'),
+            type: 'POST',
+            dataType: "json",
+            data: 'id=' + button.attr('data-id') + '&usertoken=' + userToken,
+            success: function(reply){
+                if(reply.status){
+                    showNotification(reply.message, '', 'success');
+                    $('#row_' + button.attr('data-target')).fadeOut('fast', function(){
+                        $(this).remove();
+                    });
+                }else{
+                    showNotification(reply.message, '', 'error');
+                }
+            }
+        });
+        e.preventDefault();
+    });
+
+    /* 
+     * Admin save settings
+     * * * * * * * * * * * * * * * * * * * * */
+    $('#saveSettings').click(function(e){
+        $.ajax({
+            url: baseUrl + '/?p=ajax&a=savesettings',
+            type: 'POST',
+            dataType: "json",
+            data: $('#settings form').serialize() + '&usertoken=' + userToken,
+            success: function(reply){
+                if(reply.status){
+                    showNotification(reply.message, '', 'success');
+                }else{
+                    showNotification(reply.message, '', 'error');
+                }
+            }
+        });
+        e.preventDefault();
+        return false;
+    });
+
     /* 
      * Highlighter (terms agreement or like)
      * * * * * * * * * * * * * * * * * * * * */
-    $('.highlight').live("click", function (e) {
+    $(document).on("click", ".highlight", function(e){
         var area = $(this).attr('data-area'),
             width = $(area).width();
 
@@ -73,7 +210,7 @@ function showNotification(a, b, c, sticky) {
         sticky = false;
     }
 
-    if (b === 'undefined') {
+    if (b === 'undefined' || b == '' ) {
         b = '';
     } else {
         b = '<h4 class="alert-heading">' + b + '</h4>';
@@ -95,7 +232,7 @@ function showNotification(a, b, c, sticky) {
     }
 
     var position = $("#alertMessage").position();
-    $("#alertMessage").html('<div class="alert ' + c + '"><a class="close" data-dismiss="alert" href="#">&times;</a>' + b + a + "</div>").stop(true, true).animate({
+    $("#alertMessage").html('<div class="alert ' + c + '"><button type="button" class="close" data-dismiss="alert">&times;</button>' + b + a + "</div>").stop(true, true).animate({
         top: 0
     }, 500, function () {
         if (!sticky) {

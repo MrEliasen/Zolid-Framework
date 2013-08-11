@@ -8,15 +8,6 @@ return array(
                 'mysql_error' => 'Unable to establish a connection to the the site. Please try again later.'
             ),
         	'template' => array(
-				'navigation' => array(
-					'login' => 'Login',
-					'register' => 'Register',
-					'forgotpass' => 'Forgot Password',
-					'myaccount' => 'My Account',
-					'settings' => 'My Settings',
-					'dashboard' => 'Dashboard',
-					'logout' => 'Logout'
-				),
 				'notfound' => 'Not found.'
 			),
 			'user' => array(
@@ -88,71 +79,6 @@ return array(
 				'settings_error8' => 'The password you have entered was not correct.',
 				'settings_success' => 'Your account settings and profile has been updated.'
 			)
-        ),
-		'templates' => array(
-			'404' => array(
-				'notfound' => 'The page you requested was not found!',
-				'goback' => 'Back to dashboard'
-			),
-			'index' => array(
-				'login_title' => 'Account Login',
-				'login_email' => 'E-mail / Username',
-				'login_password' => 'Password',
-				'login_remember' => 'Remember login information',
-				'login_submit' => 'Log me in!',
-				'forgotlogin' => 'Forgot your login details?',
-				'herobody' => 'This framework is just a "simple" framework on which you can build your own sites. It comes with a build in simple user management system to handle sign ups, logins and so on. There are several security implementations build in as well, to protect against sql injections, XSS, CSRF and several session security features.',
-				'herosignup' => 'Try it out - register here!',
-				
-				'block1_title' => 'Download',
-				'block1_body' => 'The Zolid Framework is an open source project released on Github, under the <a href="http://opensource.org/licenses/mit-license.php">MIT license</a>. The latest available version is: <label class="label label-success">' . ZF_VERSION . '</label>',
-				'block1_button' => 'Download Now!',
-				
-				'block2_title' => 'Documentation',
-				'block2_body' => 'The lastst version of the documentation will always be available on Github. Please consult the documentation before asking for help.',
-				'block2_button' => 'View Documentation',
-				
-				'block3_title' => 'About',
-				'block3_body' => 'The Zolid Framework is coded by <a href="http://twitter.com/markeliasen">@MarkElisen</a>, using the awesome <a href="http://twitter.github.com/bootstrap/index.html">Twitter Bootstrap</a> for the design.'
-			),
-			'recover' => array(
-				'recover_title' => 'Recover Account',
-				'recover_text' => 'Did you forget your account password? No problem at all!<br />Just type the e-mail or username of your account in the field below, and a password reset link will be sent to the email associated with the account.',
-				'recover_email' => 'E-mail or username',
-				'recover_submit' => 'Reset Password!'
-			),
-			'register' => array(
-				'register_loggedin' => 'You already have an account.. you are already logged in you know!',
-				'register_title' => 'Create new account',
-				'register_username' => 'Username',
-				'register_email' => 'E-mail',
-				'register_password' => 'Password',
-				'register_verify' => 'Verify Password',
-				'register_tos_part1' => 'I have read and agree to the',
-				'register_tos_part2' => 'and the',
-				'register_tos' => 'Terms of Service',
-				'register_pp' => 'Privacy Policy',
-				'register_submit' => 'Crate Free Account'
-			),
-			'settings' => array(
-				'settings_avatar1' => 'Update your avatar at',
-				'settings_avatar2' => 'Gravatar.com',
-				'settings_username' => 'Username',
-				'settings_emaul' => 'Email',
-				'settings_password' => 'New Password',
-				'settings_verify' => 'Confirm New Password',
-				'settings_passhelp' => 'Leave the password fields blank if you do not wish to change your password.',
-				'settings_curpass' => 'Current Password',
-				'settings_curpasshelp' => 'You need to type in your current password for security reasons whenever you make changes to your account.',
-				'settings_submit' => 'Save Settings',
-				'settings_mailtitle' => 'Mail Settings',
-				'settings_admin' => 'Administation',
-				'settings_adminhelp' => 'Enabling this option will add your email address to the administrators mail list and you will receive any updates sent from',
-				'settings_members' => 'Members',
-				'settings_membershelp' => 'Enabling this option will allow other members to send you emails from your profile. Your e-mail will not be visible to other members.',
-				'settings_generaltitle' => 'General Settings',
-				'settings_language' => 'Language'
-			)
-		)
+        )
     )
 );

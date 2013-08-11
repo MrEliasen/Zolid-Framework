@@ -8,13 +8,11 @@ if(!defined('CORE_PATH')){
 
 		<!-- Feature Headliner -->
 		<div class="row">
-			<div class="span12 text-center">
+			<div class="col-lg-12 text-center">
 				<h2>404</h2>
 				<p>
-					<?php echo $this->lang['core']['templates']['404']['notfound']; ?> 
-					<a href="<?php echo $this->__get('base_url'); ?>">
-						<?php echo $this->lang['core']['templates']['404']['goback']; ?>
-					</a>
+					The page you requested was not found! 
+					<a href="<?php echo $this->base_url; ?>">Back to dashboard</a>
 				</p>
 			</div>
 		</div>
