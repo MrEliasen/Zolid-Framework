@@ -241,7 +241,7 @@ class Template extends Admin
         $sql_host 		= Security::sanitize( $_POST['sqlhost'], 'purestring');
         $sql_port 		= Security::sanitize( $_POST['sqlport'], 'integer');
         $sql_user 		= Security::sanitize( $_POST['sqluser'], 'purestring');
-        $sql_pass 		= Security::sanitize( $_POST['sqlpass'], 'string');
+        $sql_pass 		= addslashes( $_POST['sqlpass']);
         $sql_db 		= Security::sanitize( $_POST['sqldb'], 'purestring');
         
         $smtp_host 		= Security::sanitize( ( !empty($_POST['smtp_host']) ? $_POST['smtp_host'] : '' ), 'purestring');
