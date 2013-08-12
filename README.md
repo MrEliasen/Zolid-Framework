@@ -19,10 +19,9 @@ It comes with a build in user management system to handle registration, logins, 
 
 ##Demo
 [Click Here](http://zolidframe.zolidcore.com) to see a "vanialla" installation of the system.
-You can either just create an account or login using the dummy account below.
-However note that only one user can be online on an account at the same time (part of the framework's security)
+You can either just create an account or login using the dummy account below. However note that only one user can be online on an account at the same time (part of the framework's security)
 
-**Username:** admin
+**Username:** admin<br>
 **Password:** password
 
 ##Documentation
@@ -32,6 +31,7 @@ The documentation is work in progress, so it is still very limited.
 ##Server Requirements
 * PHP 5.3+
 * 1 MySQL database
+
 When you try to install the system it will run a system check to see if your server is compatible.
 
 ##Installation
