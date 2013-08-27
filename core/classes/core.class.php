@@ -298,7 +298,7 @@ class Core
             $id,
             $data,
             time(),
-            $this->session_encryption( $_SERVER['HTTP_USER_AGENT'] ),
+            $this->session_encryption( ( !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' ) ),
             $this->session_encryption( $_SERVER['REMOTE_ADDR'] ),
             $this->session_encryption( gethostbyaddr( $_SERVER['REMOTE_ADDR'] ) ),
         ));

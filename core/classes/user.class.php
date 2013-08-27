@@ -124,7 +124,7 @@ class User extends Core
             $query_where = 'username';
         }
 
-		$stmt = $this->sql->prepare('SELECT email FROM users WHERE ' . $query_where . ' = ?');
+		$stmt = $this->sql->prepare('SELECT email FROM users WHERE ' . $query_where . ' = :email');
 		$stmt->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
 		$stmt->execute();
 		$this->queries++;

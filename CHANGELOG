@@ -1,5 +1,9 @@
+[v 0.1.4.1] - 26th of August, 2013
+---------------------------------------
+ - Fixed password recovery password bug.
+ 
 [v 0.1.4] - 11th of August, 2013
------------------------------
+---------------------------------------
  - Updated email validation function from REGEX to Filter_var.
  - Updated the installer to reflect the new changes.
  - Updated the way the framework settings are stored.
@@ -15,7 +19,7 @@
  - Optimised the way you encrypt and decrypt data, you can just use 2 functions now.
 
 [v 0.1.3] - 5th of July, 2013
------------------------------
+---------------------------------------
  - Fixed the issue with CSRF tokens being invalid.
  - Fixed an issue with resetting password.
  - Fixed an issue when changing password on settings page.
@@ -23,7 +27,7 @@
 
  
 [v 0.1.2] - 24th of April, 2013
------------------------------
+---------------------------------------
  - The user can now choose to login with either their email or username.
  - Account recovery now works with both the users username and email.
  - Fixed the way the base url is generated.
@@ -31,7 +35,7 @@
 
  
 [v 0.1.1] - 7th of April, 2013
------------------------------
+---------------------------------------
  - Fixed a bug when generating the base url on some systems.
  - Fixed a bug where it returned 404 when installing.
  - Fixed a bug with the password strength checker.
