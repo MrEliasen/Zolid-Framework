@@ -123,6 +123,22 @@
 							?>
 						</td>
 					</tr>
+					<tr>
+						<td>Write Permissions: /core</td>
+						<td style="text-align: right;">
+							<?php
+								if( !is_writable(CORE_PATH) )
+								{
+									$continue = false;
+									echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+								}
+								else
+								{
+									echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+								}
+							?>
+						</td>
+					</tr>
 				</table>
 				<hr>
 				<?php
@@ -200,9 +216,9 @@
 						<div class="col-lg-8">
 							<select id="site_zone" class="form-control" name="site_zone">
 							<?php
-								foreach( array_flip( Data::getTimezones() ) as $key => $value )
+								foreach( array_flip( $this->timezones() ) as $key => $value )
 								{
-									echo '<option value="' . $value . '" ' . ($value == 'Europe/London' ? 'selected="selected"' : '') . '>' . $key . '</option>';
+									echo '<option value="' . $value . '" ' . ($value == 'Europe/Copenhagen' ? 'selected="selected"' : '') . '>' . $key . '</option>';
 								}
 							?>
 							</select>
@@ -262,6 +278,32 @@
 							<input class="form-control" type="text" id="smtp_pass" name="smtp_pass" placeholder="">
 						</div>
 					</div>
+                    
+					<legend>Admin Account</legend>
+					<div class="form-group">
+						<label class="col-lg-4 control-label" for="username">Username</label>
+						<div class="col-lg-8">
+							<input class="form-control" type="text" id="username" name="username">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-lg-4 control-label" for="email">Email</label>
+						<div class="col-lg-8">
+							<input class="form-control" type="text" id="email" name="email">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-lg-4 control-label" for="password">Password</label>
+						<div class="col-lg-8">
+							<input class="form-control" type="password" id="password" name="password">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-lg-4 control-label" for="password2">Confirm Password</label>
+						<div class="col-lg-8">
+							<input class="form-control" type="password" id="password2" name="password2">
+						</div>
+					</div>
 				</div>
 			</form>
             
@@ -299,6 +341,7 @@
 					if (data.status) {
 						$("#testconnection button").html('Installed Successfully!').addClass('btn-success').attr('disabled', 'true');
 						showNotification(data.message, 'Success', 'success');
+						setTimeout((function(){location.href="/";}), 3000);
 					} else {
 						showNotification(data.message, 'Error', 'error');
 					}

@@ -6,9 +6,9 @@
  *  A class which handles error logging
  *
  *  @author     Mark Eliasen
- *  @website    www.zolidweb.com
+ *  @website    www.zolidsolutions.com
  *  @copyright  (c) 2013 - Mark Eliasen
- *  @version    0.1.2
+ *  @version    0.1.5
  */
 
 if( !defined('CORE_PATH') )

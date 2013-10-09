@@ -14,10 +14,12 @@ if(!defined('CORE_PATH')){
 
 		<!-- Bootstrap CSS -->
 		<link href="<?php echo $this->base_url; ?>/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen">
-		<link href="<?php echo $this->base_url; ?>/assets/css/bootstrap-glyphicons.css" rel="stylesheet" type="text/css" media="screen">
 		
 		<!-- Core Css -->
 		<link href="<?php echo $this->base_url; ?>/assets/css/zfstyle.css" rel="stylesheet" type="text/css" media="screen">
+
+		<!-- Plugins Css -->
+		<link href="<?php echo $this->base_url; ?>/assets/libs/nestable/nestable.css" rel="stylesheet" type="text/css" media="screen">
 		
 		<!-- jQuery -->
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
@@ -26,18 +28,17 @@ if(!defined('CORE_PATH')){
 	<body>
 		<div id="alertMessage"></div>
 		
-		<div class="navbar navbar-fixed-top">
+		<div class="navbar navbar-default navbar-fixed-top">
 			<div class="container">
-				<!-- .navbar-toggle is used as the toggle for collapsed navbar content -->
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-
-				<a class="navbar-brand" href="<?php echo $this->base_url; ?>"><?php echo $this->config['site_name']; ?></a>
-
-				<div class="nav-collapse collapse navbar-responsive-collapse">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="<?php echo $this->base_url; ?>"><?php echo $this->config['site_name']; ?></a>
+				</div>
+				<div class="navbar-collapse collapse">
 					<?php
 						if( $this->installed )
 						{
@@ -64,9 +65,12 @@ if(!defined('CORE_PATH')){
 												<li class="' . $this->activepage('dashboard') . '">
 													<a href="' . $this->generateURL('dashboard') . '">Dashboard</a>
 												</li>
+												<li class="' . $this->activepage(array('forum', 'forum_thread', 'forum_category')) . '">
+													<a href="' . $this->generateURL('forum') . '">Forum</a>
+												</li>
 											</ul>';
 								
-									echo '<ul class="nav navbar-nav pull-right">
+									echo '<ul class="nav navbar-nav navbar-right">
 												<li class="divider-vertical"></li>
 												<li class="dropdown">
 													<a href="#" class="dropdown-toggle" data-toggle="dropdown">

@@ -19,7 +19,7 @@ if(!defined('CORE_PATH')){
 		<div class="row">
 			<div class="col-lg-4">
 				<h2>Download &amp; License</h2>
-				<p>The latest available version is: <label class="label label-info"><?php echo ZF_VERSION; ?></label>, can download it directly from github below. This framework is released under the <a href="http://opensource.org/licenses/mit-license.php">MIT license</a>.</p>
+				<p>The latest version of the Zolid Framework can be downloaded directly from github. This framework is released under the <a href="http://opensource.org/licenses/mit-license.php">MIT license</a>.</p>
 				<p><a class="btn btn-info btn-sm" href="https://github.com/MrEliasen/Zolid-Framework/archive/master.zip">Download Now &raquo;</a></p>
 			</div>
 			<div class="col-lg-4">

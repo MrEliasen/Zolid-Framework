@@ -1,3 +1,18 @@
+[v 0.1.5.0] - 7th of October, 2013
+---------------------------------------
+ - Added option to select default group to new sign ups.
+ - Added admin account creation on install.
+ - Added the option to move the cache dir.
+ - Added a forum system.
+ - Added a version checker system based on raw file output from github.
+ - Updated Bootstrap to 3.0.
+ - Updated the modal js code to support "add to specific element".
+ - Updated the AES key name so it makes more sense.
+ - Updated the sanitation code to be more efficient, and so it uses the HTML purifier config.
+ - Updated the "SEO" url generation.
+ - Fixed the "mixedint" sanitation filter, it now actually works.
+ - Cleaned up some of the classes and removed obsolete code.
+
 [v 0.1.4.1] - 26th of August, 2013
 ---------------------------------------
  - Fixed password recovery password bug.

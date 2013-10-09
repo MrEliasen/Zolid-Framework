@@ -8,6 +8,8 @@ if( !$this->permission('admin') )
 	header('Location: ' . $this->__get('base_url') );
 	exit;
 }
+
+$version = $this->checkVersion();
 ?>
 <div class="main">
     <div class="container">
@@ -17,8 +19,63 @@ if( !$this->permission('admin') )
                 <ul class="nav nav-pills nav-stacked" id="adminTab">
                     <li class="active"><a href="#accounts" data-toggle="tab">Accounts</a></li>
                     <li><a href="#groups" data-toggle="tab">Groups</a></li>
+                    <li><a href="#forums" data-toggle="tab">Forum</a></li>
                     <li><a href="#settings" data-toggle="tab">Settings</a></li>
                 </ul>
+                <div class="hr noline"></div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Framework Version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Current:</strong></td>
+                            <td><?php echo $version['current']; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Latest:</strong></td>
+                            <td><?php echo $version['latest'] . ( $version['upgrade'] ? ' <i class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="' . $version['message'] . '"></i>' : '' ); ?></td>
+                        </tr>
+                        <?php
+                        if( $version['upgrade'] )
+                        {
+                            echo '<tr>
+                                    <td><strong>Released:</strong></td>
+                                    <td>' . date('d/m/y', $version['release']) . '</td>
+                                </tr>';
+
+                            $priority = '';
+                            switch( $version['priority'] )
+                            {
+                                default:
+                                case 1:
+                                    $priority = '<span class="label label-info">Normal</span>';
+                                    break;
+
+                                case 2:
+                                    $priority = '<span class="label label-warning">Medium</span>';
+                                    break;
+
+                                case 3:
+                                    $priority = '<span class="label label-danger">Critial</span>';
+                                    break;
+                            }
+                            echo '<tr>
+                                    <td><strong>Priority:</strong></td>
+                                    <td>' . $priority . '</td>
+                                </tr>';
+                        }
+                        else
+                        {
+                            echo '<tr>
+                                    <td colspan="2" class="text-center">Up To Date <i class="glyphicon glyphicon-ok"></i></td>
+                                </tr>';
+                        }
+                        ?>
+                    </tbody>
+                </table>
             </div>
 
             <div class="col-lg-10">
@@ -39,7 +96,7 @@ if( !$this->permission('admin') )
                             </thead>
                             <tbody>
                                 <?php
-                                    $stmt = $this->sql->prepare('SELECT users.`id`, `username`, `active_key`, `expire`, `title` FROM users LEFT JOIN sessions ON sessions.`id` = users.`session_id` LEFT JOIN groups ON groups.`id` = users.`group`');
+                                    $stmt = $this->sql->prepare('SELECT users.`id`, `username`, `active_key`, `expire`, `title` FROM users LEFT JOIN sessions ON sessions.`id` = users.`session_id` LEFT JOIN groups ON groups.`id` = users.`membergroup`');
                                     $stmt->execute();
                                     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     $stmt->closeCursor();
@@ -149,6 +206,37 @@ if( !$this->permission('admin') )
                                 <div class="col-lg-offset-4 col-lg-8">
                                     <p class="help-block"><b>Please Note!</b><br>if you enable Friendly URLS, you have to uncomment the lines specified in the .htaccess file!</p>
                                     <button class="btn btn-primary btn-block" id="saveSettings">Save Settings</button>
+                                </div>
+                            </fieldset>
+                            <input type="hidden" name="savesettings" value="<?php echo Security::csrfGenerate('savesettings'); ?>">
+                        </form>
+                    </div>
+
+                    <div class="tab-pane in fade" id="forums">
+                        <legend>Forum Categories <button class="btn btn-xs btn-success" data-action="savenewforum" data-toggle="modal" data-loadmodal="addforumcat" >Add New</button><img alt="" src="assets/img/loading-small.gif" id="savestatus-loading"><i id="savestatus-ok" class="glyphicon glyphicon-floppy-saved"></i><i id="savestatus-err" class="glyphicon glyphicon-floppy-remove"></i></legend>
+                        <form autocomplete="off" action="#" class="form-horizontal">
+                            <fieldset>
+                                <div class="dd" id="forumlist">
+                                    <ol class="dd-list">
+                                        <?php
+                                            $stmt = $this->sql->query('SELECT * FROM forum_categories ORDER BY sort ASC');
+                                            $stmt->execute();
+                                            $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                            $stmt->closeCursor();
+
+                                            foreach ($categories as $category)
+                                            {
+                                                echo '<li id="row_fc' . $category['id'] . '" class="dd-item dd3-item" data-id="' . $category['id'] . '">
+                                                        <div class="dd-handle dd3-handle">Drag</div>
+                                                        <div class="dd3-content">
+                                                            ' . $category['title'] . '
+                                                            <button onclick="return false;" class="pull-right btn btn-xs btn-danger" data-placement="left" data-toggle="popover" data-title="<b>All posts in this category will be deleted as well, continue?</b>" data-content="<button onclick=\'return false;\' class=\'btn btn-danger btn-xs funcdelete\' data-id=\'' . $category['id'] . '\' data-action=\'deleteforumcategory\' data-target=\'fc' . $category['id'] . '\'>Yes, delete it</button> <button onclick=\'return false;\' class=\'btn btn-xs btn-info closepo\'>No</button>"><i class="glyphicon glyphicon-trash"></i></button>
+                                                            <button class="pull-right btn btn-xs btn-primary" data-action="updatecategory" data-toggle="modal" data-loadmodal="editforumcategory" data-id="' . $category['id'] . '"><i class="glyphicon glyphicon-edit"></i></button>
+                                                        </div>
+                                                    </li>';
+                                            }
+                                        ?>
+                                    </ol>
                                 </div>
                             </fieldset>
                             <input type="hidden" name="savesettings" value="<?php echo Security::csrfGenerate('savesettings'); ?>">

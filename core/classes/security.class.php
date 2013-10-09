@@ -6,9 +6,9 @@
  *  Class which handles all security releated functions throughout the system.
  *
  *  @author     Mark Eliasen
- *  @website    www.zolidweb.com
+ *  @website    www.zolidsolutions.com
  *  @copyright  (c) 2013 - Mark Eliasen
- *  @version    0.1.2
+ *  @version    0.1.5
  */
 
 if( !defined('CORE_PATH') )
@@ -76,49 +76,44 @@ class Security
 		##       HTML Purifier 4.4.0 - Standards Compliant HTML Filtering       ##
 		require_once(CORE_PATH . '/libs/htmlpurifier-4.4.0/HTMLPurifier.standalone.php');
 
-		$purifier = new HTMLPurifier();
 		$config = HTMLPurifier_Config::createDefault();
 		$config->set('Core.Encoding', 'UTF-8');
+        $config->set('HTML.Allowed', '');
 
 		switch($type){
 			case 'string':
+                $config->set('HTML.Allowed', 'a[href|title],b,strong,em,ul,li,ol,pre,code,img[src|title|alt],blockquote,strike,small,br');
 				$data = filter_var( $data, FILTER_SANITIZE_STRING );
 				break;
 				
 			case 'purestring':
-				$data = strip_tags( $data );
+                // Html tags will be stripped by HTML purifier <3.
+                $data = filter_var( $data, FILTER_SANITIZE_STRING );
 				break;
 				
 			case 'atoz':
-				$data = preg_replace( '/[^a-zA-Z]+/', '', strip_tags( $data) );
+				$data = preg_replace( '/[^a-zA-Z]+/', '', $data );
 				break;
 				
 			case 'page':
-				$data = preg_replace( '/[^0-9a-zA-Z\-\_\.]+/', '', str_replace('.php', '', strip_tags(  $data ) ) );
+				$data = preg_replace( '/[^0-9a-zA-Z\-\_\.]+/', '', str_replace('.php', '', $data ) );
 				break;
 				
 			case 'integer':
 				$data =  filter_var( $data, FILTER_SANITIZE_NUMBER_INT );
 				break;
 			
-			case 'float':
-				$data = filter_var( $data, FILTER_SANITIZE_NUMBER_INT, FILTER_FLAG_ALLOW_FRACTION );
-				break;
-				
-			case 'mixedint':
-				$data = filter_var( $data, FILTER_SANITIZE_NUMBER_INT, FILTER_FLAG_ALLOW_FRACTION, FILTER_FLAG_ALLOW_THOUSAND );
+            case 'mixedint':
+				$data = preg_replace( '/[^0-9.,]+/', '', $data );
 				break;
 				
 			case 'email':
 				$data = strtolower( filter_var( $data, FILTER_SANITIZE_EMAIL ) );
 				break;
-				
-			case 'phone':
-				$data = filter_var(  $data, FILTER_SANITIZE_NUMBER_INT );
-				break;
 		}
 		
         /* HTML purifier to help prevent XSS in case anything slipped through. */
+        $purifier = new HTMLPurifier($config);
         $data = $purifier->purify( $data );
 
 		return $data;
@@ -148,8 +143,9 @@ class Security
 
 		$key = '';
 		$alt = mt_rand() % 2;
-		for ($i = 0; $i < $length; $i++) {
-			$key .= $options[(mt_rand() % strlen($options))];
+		for( $i = 0; $i < $length; $i++ )
+        {
+			$key .= $options[ ( mt_rand() % strlen($options) ) ];
 		}
 		
 		return $key;

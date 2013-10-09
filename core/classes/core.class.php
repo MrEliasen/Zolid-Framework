@@ -6,9 +6,9 @@
  *  A class which handles sessions and database connection(s), and caching.
  *
  *  @author     Mark Eliasen
- *  @website    www.zolidweb.com
+ *  @website    www.zolidsolutions.com
  *  @copyright  (c) 2013 - Mark Eliasen
- *  @version    0.1.2
+ *  @version    0.1.5
  */
 
 if( !defined('CORE_PATH') )
@@ -42,18 +42,12 @@ class Core
             $this->config['site_name'] = 'Zolid Framework';
             return false;
         }
-        
-    	if( file_exists(CORE_PATH . '/config.php') )
+        else
     	{
     		require_once( CORE_PATH . '/config.php' );
             $this->config = $config;
             unset($config);
     	}
-    	else
-    	{
-            Error::log( 47, print_r($e), 'core.class.php' );
-            die( $this->lang['core']['classes']['core']['config_error'] );
-        }
 
         // Quick cloudflare user IP fix
         if( !empty($_SERVER["HTTP_CF_CONNECTING_IP"]) )
@@ -232,13 +226,13 @@ class Core
         return true;
     }
 
-    /* not used for anything but to keep the session_set_save_handler() function happy */
+    // not used for anything but to keep the session_set_save_handler() function happy
     public function open()
     {
         return true;
     }
 
-    /* not used for anything but to keep the session_set_save_handler() function happy */
+    // not used for anything but to keep the session_set_save_handler() function happy
     public function close()
     {
         return true;
@@ -339,80 +333,15 @@ class Core
      */
     protected function session_encryption($string)
     {
-        $string = hash_hmac('sha256', $this->config['global_salt'].$string, $this->config['global_key']);
+        $string = hash_hmac('sha256', $this->config['global_salt'] . $string, $this->config['global_key']);
 
         return $string;
     }
 
-
     /**
-     * retuns the cached content if it exists and is not expired, else it returns empty.
-     * 
-     * @param  string $name the unique cache identifier aka name
-     * @return string       the cached content.
+     * Fetches and caches the current framework settings. Re-caching will only happen if any changes are made to the settings.
+     * @return [type]
      */
-    protected function showCache( $name, $time = 0 )
-    {
-        if( empty($time) )
-        {
-            $time = 600;
-            if( !empty($this->config['cache_time']) )
-            {
-                $time = $this->config['cache_time'];
-            }
-        }
-
-        $dir = CORE_PATH . '/cache/';
-        $from_file = Security::sanitize($name, 'page') . '.cache';
-        
-        if( file_exists($dir . $from_file) )
-        {
-            if( filesize($dir . $from_file) > 0 )
-            {
-                if( filemtime($dir . $from_file) > time() - $time )
-                {
-                    ob_start();
-                    include($dir . $from_file);
-                    $cache = ob_get_clean();
-
-                    return $cache;
-                }
-            }
-        }
-
-        return '';
-    }
-
-    /**
-     * caches the $output to a .cache file with the name of $name
-     * 
-     * @param mised $output the output you wish to cache
-     * @param string $name   the name of the cache file, used later for retrieval
-     */
-    protected function addCache( $output, $name )
-    {
-        //if the cache directory has been deleted, create it.
-        if( !is_dir(CORE_PATH . '/cache') )
-        {
-            mkdir(CORE_PATH . '/cache', 0777);
-        }
-
-        $dir = CORE_PATH . '/cache/';
-        $to_file = Security::sanitize($name, 'page') . '.cache';
-
-        $theFile = @fopen($dir . $to_file, 'w');
-        $saved = @fwrite($theFile, $output);
-        @fclose($theFile);
-
-        if($saved)
-        {
-            chmod($dir . $to_file, 0750);
-            return true;
-        }
-
-        return false;
-    }
-
     private function getSettings()
     {
         $config = $this->showCache('framework_settings', 22118400); // 1 year, its recached if the user makes any changes.
@@ -442,5 +371,126 @@ class Core
 
         $this->generateBaseUrl( $this->config['base_url'] );
         date_default_timezone_set( $this->config['timezone'] );
+        setlocale(LC_ALL, 'en_UK.UTF8');
+    }
+
+    /**
+     * retuns the cached content if it exists and is not expired, else it returns empty.
+     * 
+     * @param  string $name the unique cache identifier aka name
+     * @return string       the cached content.
+     */
+    public function showCache( $name, $time = 0 )
+    {
+        if( empty($time) )
+        {
+            $time = 600;
+            if( !empty($this->config['cache_time']) )
+            {
+                $time = $this->config['cache_time'];
+            }
+        }
+        
+        $dir = ( !empty($this->config['cache']) ? $this->config['cache'] : CORE_PATH . '/cache' );
+        $from_file = $name . '.cache';
+        
+        if( file_exists($dir . '/' . $from_file) )
+        {
+            if( filesize($dir . '/' . $from_file) > 0 )
+            {
+                if( filemtime($dir . '/' . $from_file) > time() - $time )
+                {
+                    ob_start();
+                    include($dir . '/' . $from_file);
+                    $cache = ob_get_clean();
+
+                    return $cache;
+                }
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * caches the $output to a .cache file with the name of $name
+     * 
+     * @param mised $output the output you wish to cache
+     * @param string $name   the name of the cache file, used later for retrieval
+     */
+    public function addCache( $output, $name )
+    {
+        $dir = ( !empty($this->config['cache']) ? $this->config['cache'] : CORE_PATH . '/cache' );
+
+        if( !is_dir($dir) )
+        {
+            mkdir($dir, 0755);
+        }
+
+        $to_file = $name . '.cache';
+
+        $theFile = fopen($dir . '/' . $to_file, 'w');
+        $saved = fwrite($theFile, $output);
+        fclose($theFile);
+
+        if( empty($this->config['cache']) )
+        {
+            chmod($dir . '/' . $to_file, 0750);
+        }
+
+        if( $saved )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function checkVersion()
+    {
+        $output = array(
+            'current' => 'Unknown',
+            'latest' => 'Unknown',
+            'upgrade' => false,
+            'release' => 0,
+            'message' => ''
+        );
+
+        if( defined('ZF_VERSION') )
+        {
+            $output['current'] = ZF_VERSION;
+            $versiondata = $this->showCache('versioncheck', 300);
+
+            if( empty($versiondata) )
+            {
+                $ctx = stream_context_create(array( 
+                    'http' => array( 
+                        'timeout' => 10
+                        ) 
+                    ) 
+                ); 
+                $versiondata = file_get_contents('https://raw.github.com/MrEliasen/Zolid-Framework/master/latestversion', null, $ctx);
+                $this->addCache($versiondata, 'versioncheck');
+            }
+            
+            if( !empty($versiondata) )
+            {
+                $versiondata = json_decode($versiondata, true);
+                if( version_compare($output['current'], Security::sanitize($versiondata['version'], 'mixedint')) < 0 )
+                {
+                    $output['upgrade'] = true;
+                }
+
+                $output['latest'] = Security::sanitize($versiondata['version'], 'mixedint');
+                $output['release'] = Security::sanitize($versiondata['date'], 'integer');
+                $output['message'] = Security::sanitize($versiondata['message'], 'string');
+            }
+            else
+            {
+                $output['latest'] = 'Failed (timeout)';
+            }
+        }
+
+        return $output;
     }
 }

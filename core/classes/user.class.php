@@ -6,9 +6,9 @@
  *  A class which handles all account/user related functions like login and registrations.
  *
  *  @author     Mark Eliasen
- *  @website    www.zolidweb.com
+ *  @website    www.zolidsolutions.com
  *  @copyright  (c) 2013 - Mark Eliasen
- *  @version    0.1.2
+ *  @version    0.1.5
  */
 
 if( !defined('CORE_PATH') )
@@ -366,7 +366,7 @@ class User extends Core
 		
 		// Check if the data matches the data we have on the user.
 		// Also if it does, we get the data we need to set the session.
-		$stmt = $this->sql->prepare('SELECT u.id, u.username, u.email, u.password, u.local, u.acc_key, u.active_key, g.id as gid, g.title, g.permissions FROM users as u LEFT JOIN groups as g ON g.id = u.group WHERE ' . $sql_where . ' LIMIT 1');
+		$stmt = $this->sql->prepare('SELECT u.id, u.username, u.email, u.password, u.local, u.acc_key, u.active_key, g.id as gid, g.title, g.permissions FROM users as u LEFT JOIN groups as g ON g.id = u.membergroup WHERE ' . $sql_where . ' LIMIT 1');
 		$stmt->execute( $sql_data );
 		$this->queries++;
 		$userData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -518,10 +518,10 @@ class User extends Core
 
 		try{
 			$encoded_data = $_COOKIE[ sha1($_SERVER['REMOTE_ADDR']) ];
-			$encoded_data = substr($encoded_data, 0, -64);
-			$encoded_data = strrev($encoded_data);
-			$encoded_data = base64_decode($encoded_data);
-			$data = unserialize($encoded_data);
+			$encoded_data = @substr($encoded_data, 0, -64);
+			$encoded_data = @strrev($encoded_data);
+			$encoded_data = @base64_decode($encoded_data);
+			$data = @unserialize($encoded_data);
 			
 			if( empty($data['id']) || empty($data['check']) || empty($data['token']) )
 			{
@@ -579,7 +579,7 @@ class User extends Core
 	 * 
 	 * @return boolean true on success, false on error
 	 */
-	private function register()
+	protected function register( $admin = false )
 	{
     	if( $this->permission('loggedin') )
     	{
@@ -587,13 +587,13 @@ class User extends Core
     	}
 
 		// Check if a sign up request was sent to the system
-		if( !isset($_REQUEST['signup']) )
+		if( !$admin && !isset($_REQUEST['signup']) )
 		{
 			return false;
 		}
 
 		// Check CSRF token
-		if( !Security::csrfCheck('signup') )
+		if( !$admin && !Security::csrfCheck('signup') )
 		{
 			Notifications::setNotification('register_1', $this->lang['core']['classes']['user']['register_error1'], null, 'error');
 		}
@@ -610,7 +610,7 @@ class User extends Core
 		}
 
 		// Check if the user accepted the terms and policies
-		if( empty( $_REQUEST['terms'] ) )
+		if( !$admin && empty( $_REQUEST['terms'] ) )
 		{
 			Notifications::setNotification('register_1', $this->lang['core']['classes']['user']['register_error3'], null, 'error');
 			return false;
@@ -648,12 +648,13 @@ class User extends Core
 		
 		$activation_key = md5( Security::randomGenerator(12) . $_REQUEST['email']);
 		
-		$stmt = $this->sql->prepare('INSERT INTO users (email, email_hash, password, username, active_key, acc_key) VALUES ( :email, :emailhash, :pass, :username, :actkey, :acckey)');
+		$stmt = $this->sql->prepare('INSERT INTO users (email, email_hash, password, username, membergroup, active_key, acc_key) VALUES ( :email, :emailhash, :pass, :username, :groupid, :actkey, :acckey)');
 		$stmt->bindValue(':pass', hash_hmac('sha512', $this->config['global_salt'] . $_REQUEST['password'], $this->config['global_key'] ), PDO::PARAM_STR);
 		$stmt->bindValue(':emailhash', hash_hmac('sha512', $this->config['global_salt'] . strtolower($_REQUEST['email']), $this->config['global_key'] ), PDO::PARAM_STR);
 		$stmt->bindValue(':email', $encrypt_email, PDO::PARAM_STR);
 		$stmt->bindValue(':username', $_REQUEST['username'], PDO::PARAM_STR);
-		$stmt->bindValue(':actkey', $activation_key, PDO::PARAM_STR);
+		$stmt->bindValue(':groupid', ( !$admin ? $this->config['default_group'] : 2 ), PDO::PARAM_INT);
+		$stmt->bindValue(':actkey', ( !$admin ? $activation_key : '' ) , PDO::PARAM_STR);
 		$stmt->bindValue(':acckey', Security::randomGenerator(12), PDO::PARAM_STR);
 		$stmt->execute();
 		$this->queries++;
@@ -672,7 +673,7 @@ class User extends Core
 			$body = $this->render_email( $this->lang['core']['classes']['user']['register_mail'], $values );
 			$subject = $this->render_email( 'Activate Account - {{sitename}}' );
 
-			if( $this->send_mail( $_REQUEST['email'], $subject, $body ) )
+			if( $admin || $this->send_mail( $_REQUEST['email'], $subject, $body ) )
 			{
 				Notifications::setNotification( 'register_1', $this->lang['core']['classes']['user']['register_success'], null, 'success' );
 			}
@@ -814,7 +815,7 @@ class User extends Core
 			$id = $_SESSION['data']['uid'];
 		}
 
-		$stmt = $this->sql->prepare('SELECT username, email, local, groups.title FROM users LEFT JOIN groups on groups.id = users.group WHERE users.id = :userid');
+		$stmt = $this->sql->prepare('SELECT username, email, local, groups.title FROM users LEFT JOIN groups on groups.id = users.membergroup WHERE users.id = :userid');
 		$stmt->bindValue(':userid', $id, PDO::PARAM_INT);
 		$stmt->execute();
 		$this->queries++;
@@ -933,7 +934,7 @@ class User extends Core
 										ON u.id = s.acc
 									LEFT JOIN
 										groups as g
-										ON g.id = u.group 
+										ON g.id = u.membergroup 
 									WHERE 
 										s.acc = ? 
 										AND 
@@ -1066,6 +1067,11 @@ class User extends Core
         }
 	}
     
+    /**
+     * Checks if the visitor (logged in or not) have the requested permission.
+     * @param  string $section
+     * @return boolean
+     */
     protected function permission( $section = 'loggedin' )
     {
         if( !empty($this->permissions[ $section ]) )
@@ -1076,18 +1082,28 @@ class User extends Core
         return false;
     }
 
+    /**
+     * AES encryptes the input
+     * @param  Mixed $data
+     * @return string
+     */
 	protected function encryptData( $data )
 	{
-		$key = Security::pbkdf2($this->config['AES']['level-1'], $this->config['AES']['salt'], 20000, 32);
+		$key = Security::pbkdf2($this->config['AES']['key'], $this->config['AES']['salt'], 20000, 32);
 		$data = Security::encrypt($data, $key);
 		unset($key);
 
 		return $data;
 	}
 
+    /**
+     * AES decrypts the input
+     * @param  Mixed $data
+     * @return string
+     */
 	protected function decryptData( $data )
 	{
-		$key = Security::pbkdf2($this->config['AES']['level-1'], $this->config['AES']['salt'], 20000, 32);
+		$key = Security::pbkdf2($this->config['AES']['key'], $this->config['AES']['salt'], 20000, 32);
 		$data = Security::decrypt($data, $key);
 		unset($key);
 
