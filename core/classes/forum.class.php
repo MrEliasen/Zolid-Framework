@@ -108,7 +108,7 @@ class Forum extends Template
 										t.op,
 										t.views,
 										u.username,
-										u.email,
+										u.avatar,
 										c.title as category,
 										( SELECT COUNT(p2.id) FROM forum_posts as p2 WHERE p2.thread = p.thread ) as postcount
 									FROM
@@ -146,7 +146,7 @@ class Forum extends Template
 		if( !empty($posts) )
 		{
 			// add 1 view to the thread if the user have not viewed it this session
-			if( !is_array($_SESSION['forum']['viewed']) || !in_array($posts[0]['thread'], $_SESSION['forum']['viewed']))
+			if( empty($_SESSION['forum']['viewed']) || !is_array($_SESSION['forum']['viewed']) || !in_array($posts[0]['thread'], $_SESSION['forum']['viewed']))
 			{
 				$stmt = $this->sql->prepare('UPDATE forum_threads SET views = views + 1 WHERE id = ?');
 				$stmt->execute(array($posts[0]['thread']));
@@ -424,7 +424,7 @@ class Forum extends Template
 
 			if( $success )
 			{
-				$this->sql->exec('UPDATE forum_threads SET op = ' . $newpostid . ' WHERE id = ' . $newid );
+				$this->sql->exec('UPDATE forum_threads SET op = ' . Security::sanitize($newpostid, 'integer') . ' WHERE id = ' . Security::sanitize($newid, 'integer') );
 
 				$urltitle = str_replace(' ', '-', Security::sanitize($_POST['title'], 'purestring'));
 				$urltitle = Security::sanitize($urltitle, 'page');

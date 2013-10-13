@@ -1,4 +1,4 @@
-##Zolid-Framework - 0.1.5.0
+##Zolid-Framework - 0.1.5.1
 This framework makes it possible to very quickly get a website, wich require a user system, up and running in practually minutes.
 It comes with a build in user management system to handle registration, logins, logout and so on. There are several security features as well which you can use to help protect your site against SQL injections, XSS and CSRF among other things.
 
@@ -6,19 +6,15 @@ It comes with a build in user management system to handle registration, logins, 
 If you do not mind, I would love to hear from you if you think parts of the code can be improved in any way as I always love to get feedback and become a better developer.<br>
 Thanks in advance!
 
-## 0.1.5.0 Update (9th Oct. 2013)
-* Added option to select default group to new sign ups.
-* Added admin account creation on install.
-* Added the option to move the cache dir.
-* Added a forum system.
-* Added a version checker system based on raw file output from github.
-* Updated Bootstrap to 3.0.
-* Updated the modal js code to support "add to specific element".
-* Updated the AES key name so it makes more sense.
-* Updated the sanitation code to be more efficient, and so it uses the HTML purifier config.
-* Updated the "SEO" url generation.
-* Fixed the "mixedint" sanitation filter, it now actually works.
-* Cleaned up some of the classes and removed obsolete code.
+## 0.1.5.1 Update (13th Oct. 2013)
+* Fixed a minor bug loading the default language file on install.
+* Fixed minor forum bug when checking if the user has vied the thread.
+* Fixed a bug with the sanitation removing allwed html tags when using "string".
+* Fixed a potential security issue.
+* Fixed a minor bug when installed in the framework.
+* Fixed notifications not showing errors correctly.
+* Added the BASE_PATH constant. It will contain the full path to the base of the system.
+* Added custom avatar upload system to replace Gravatar.
 
 ##Documentation
 I will be working on an online documentation via Github (Pages and/or wiki)

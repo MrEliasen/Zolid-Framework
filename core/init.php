@@ -10,7 +10,7 @@
  */
  
 define('CORE_PATH', dirname(__FILE__));
-define('ZF_VERSION', '0.1.5.0'); // Leave this if you want to be able to use the version checker
+define('ZF_VERSION', '0.1.5.1'); // Leave this if you want to be able to use the version checker
 
 $_REQUEST = array_merge($_POST, $_GET);
 

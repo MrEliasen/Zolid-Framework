@@ -187,6 +187,35 @@ $(document).ready(function () {
 
         e.preventDefault();
     });
+
+    /* 
+     * Avatar Ajax Image Uploader
+     * * * * * * * * * * * * * * * * * * * * */
+    $('#uploadavatar').submit(function(e){
+        setLoading('Please wait..', true);
+        var form = new FormData($('#uploadavatar')[0]);
+        $.ajax({
+            url: baseUrl + '/?p=ajax&a=uploadavatar',
+            type: 'POST',
+            dataType: "json",
+            data: form,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(reply){
+                removeLoading();
+                if(reply.status){
+                    $('#uploadavatar')[0].reset();
+                    $('#uploadavatar img, #avatarthumb').attr('src', baseUrl + '/avatars/' + reply.newname);
+                    showNotification(reply.message, '', 'success');
+                }else{
+                    showNotification(reply.message, '', 'error');
+                }
+            }
+        });
+        e.preventDefault();
+        return false;
+    });
 });
 
 /* 
@@ -227,11 +256,11 @@ function saveforumorder() {
 function setLoading(a, b) {
     $("body").append('<div id="loading_overlay"></div><div id="loading_loader">' + a + "</div>");
     if (b) {
-        $("#loading_overlay").css("opacity", 0.15).fadeIn(function () {
-            $("#loading_loader").fadeIn();
+        $("#loading_overlay").css("opacity", 0.15).fadeIn('fast', function () {
+            $("#loading_loader").fadeIn('fast');
         });
     } else {
-        $("#loading_loader").fadeIn();
+        $("#loading_loader").fadeIn('fast');
     }
 }
 

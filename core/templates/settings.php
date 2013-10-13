@@ -13,14 +13,27 @@ $profile = $this->getAccProfile();
 ?>
 <div class="main">
 	<div class="container">
-		<form action="<?php echo $this->generateURL('settings'); ?>" method="post">
-
-			<div class="row">
-				<div class="col-lg-offset-1 col-lg-4">
-					<img src="http://www.gravatar.com/avatar/<?php echo md5( strtolower( $profile['email'] ) ); ?>?size=200&amp;d=mm&amp;r=pg" alt="" class="img-rounded">
+		<div class="row">
+			<form action="<?php echo $this->generateURL('settings'); ?>" method="post" enctype="multipart/form-data" onsubmit="return false;" id="uploadavatar">
+				<div class="col-lg-offset-1 col-md-3 text-center">
+					<img src="<?php echo $this->avatarurl($profile['avatar']); ?>" alt="" class="img-rounded">
 					<div class="clearfix"></div>
-					<p>Update your avatar at <a href="http://gravatar.com">Gravatar.com</a>.</p>
+					<div class="hr noline"></div>
+					<input type="file" name="newavatar">
+					<div class="hr noline"></div>
+					<button class="btn btn-block btn-primary">Upload</button>
+					<div class="checkbox">
+					<label>
+						<strong>Max file size:</strong> <?php echo $this->config['upload_max']; ?> Kb<br>
+						<strong>Image Type:</strong> <?php echo $this->config['upload_formats']; ?>
+					</label>
+					</div>
 				</div>
+				<input type="hidden" name="avatar" value="<?php echo Security::csrfGenerate('avatar'); ?>">
+				<input type="hidden" name="action" value="avatar">
+			</form>
+
+			<form action="<?php echo $this->generateURL('settings'); ?>" method="post">
 				<div class="col-lg-offset-1 col-lg-4">
 					<div class="form-group">
 						<label>User Group: <span class="label label-info"><?php echo $profile['title']; ?></span></label>
@@ -73,10 +86,9 @@ $profile = $this->getAccProfile();
 						<button type="submit" class="btn btn-block btn-primary input-lg">Save Settings</button>
 					</div>
 				</div>
-			</div>
-
-			<input type="hidden" name="settings" value="<?php echo Security::csrfGenerate('settings'); ?>">
-			<input type="hidden" name="action" value="settings">
-		</form>
+				<input type="hidden" name="settings" value="<?php echo Security::csrfGenerate('settings'); ?>">
+				<input type="hidden" name="action" value="settings">
+			</form>
+		</div>
 	</div>
 </div>

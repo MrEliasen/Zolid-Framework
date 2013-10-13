@@ -109,11 +109,43 @@
 						</td>
 					</tr>
 					<tr>
+						<td>Required Extension 'Imagick' or 'GD'</td>
+						<td style="text-align: right;">
+							<?php
+								if( !extension_loaded('imagick') && !extension_loaded('gd') )
+								{
+									$continue = false;
+									echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+								}
+								else
+								{
+									echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+								}
+							?>
+						</td>
+					</tr>
+					<tr>
 						<td>Recommended Mod 'mod_rewrite'</td>
 						<td style="text-align: right;">
 							<?php
 								if( !array_key_exists('HTTP_MOD_REWRITE', $_SERVER) )
 								{
+									echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+								}
+								else
+								{
+									echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+								}
+							?>
+						</td>
+					</tr>
+					<tr>
+						<td>Write Permissions: /</td>
+						<td style="text-align: right;">
+							<?php
+								if( !is_writable(BASE_PATH) )
+								{
+									$continue = false;
 									echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
 								}
 								else

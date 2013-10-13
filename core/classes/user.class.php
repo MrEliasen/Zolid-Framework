@@ -366,7 +366,7 @@ class User extends Core
 		
 		// Check if the data matches the data we have on the user.
 		// Also if it does, we get the data we need to set the session.
-		$stmt = $this->sql->prepare('SELECT u.id, u.username, u.email, u.password, u.local, u.acc_key, u.active_key, g.id as gid, g.title, g.permissions FROM users as u LEFT JOIN groups as g ON g.id = u.membergroup WHERE ' . $sql_where . ' LIMIT 1');
+		$stmt = $this->sql->prepare('SELECT u.id, u.username, u.password, u.avatar, u.local, u.acc_key, u.active_key, g.id as gid, g.title, g.permissions FROM users as u LEFT JOIN groups as g ON g.id = u.membergroup WHERE ' . $sql_where . ' LIMIT 1');
 		$stmt->execute( $sql_data );
 		$this->queries++;
 		$userData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -400,14 +400,12 @@ class User extends Core
 				}
 			}
 			
-			$decrypted_email = $this->decryptData($userData[0]['email']);
-			
 			// it did! set the session
 			$_SESSION['local'] = $userData[0]['local'];
 			$_SESSION['data']['uid'] = $userData[0]['id'];
 			$_SESSION['data']['username'] = $userData[0]['username'];
 			$_SESSION['data']['groupid'] = $userData[0]['gid'];
-			$_SESSION['data']['avatar'] = md5( strtolower( $decrypted_email ) ); //We use Gravatar for avatars, so we create and MD5 hash of the email.
+			$_SESSION['data']['avatar'] = $userData[0]['avatar'];
 
 			if( !empty($userData[0]['permissions']) )
 			{
@@ -664,14 +662,17 @@ class User extends Core
 
 		if( empty($err[2]) )
 		{
-			// Create the email we need to send to the user¨.
-			$values = array(
-				'activateurl' => $this->generateURL('login', array('action'=>'activate', 'key'=>$activation_key)),
-				'username' => $_REQUEST['username']
-			);
+			if( !$admin )
+			{
+				// Create the email we need to send to the user¨.
+				$values = array(
+					'activateurl' => $this->generateURL('login', array('action'=>'activate', 'key'=>$activation_key)),
+					'username' => $_REQUEST['username']
+				);
 
-			$body = $this->render_email( $this->lang['core']['classes']['user']['register_mail'], $values );
-			$subject = $this->render_email( 'Activate Account - {{sitename}}' );
+				$body = $this->render_email( $this->lang['core']['classes']['user']['register_mail'], $values );
+				$subject = $this->render_email( 'Activate Account - {{sitename}}' );
+			}
 
 			if( $admin || $this->send_mail( $_REQUEST['email'], $subject, $body ) )
 			{
@@ -815,7 +816,7 @@ class User extends Core
 			$id = $_SESSION['data']['uid'];
 		}
 
-		$stmt = $this->sql->prepare('SELECT username, email, local, groups.title FROM users LEFT JOIN groups on groups.id = users.membergroup WHERE users.id = :userid');
+		$stmt = $this->sql->prepare('SELECT username, email, avatar, local, groups.title FROM users LEFT JOIN groups on groups.id = users.membergroup WHERE users.id = :userid');
 		$stmt->bindValue(':userid', $id, PDO::PARAM_INT);
 		$stmt->execute();
 		$this->queries++;
@@ -925,6 +926,7 @@ class User extends Core
 										u.id,
 										u.session_id,
 										u.username,
+										u.avatar,
 										g.permissions,
 										g.id as gid
 									FROM 
@@ -963,6 +965,7 @@ class User extends Core
 			$_SESSION['data']['groupid'] = $session_data[0]['gid'];
 			$_SESSION['data']['username'] = $session_data[0]['username'];
 			$_SESSION['data']['uid'] = $session_data[0]['id'];
+			$_SESSION['data']['avatar'] = $session_data[0]['avatar'];
 			$this->permissions['loggedin'] = true;
             if( !empty($session_data[0]['permissions']) )
             {
@@ -1109,4 +1112,213 @@ class User extends Core
 
 		return $data;
 	}
+    
+    protected function avatarurl( $avatar )
+    {
+    	$default = 'default.png';
+        $show = '';
+
+        if( !empty($avatar) && file_exists( BASE_PATH . '/avatars/' . $avatar ) )
+        {
+            $show = '/avatars/' . $avatar;
+        }
+
+        return $this->__get('base_url') . ( !empty($show) ? $show : '/assets/img/default_avatar.jpg' );
+    }
+
+    protected function uploadAvatar( $userid = 0 )
+    {
+    	if( !$this->permission('loggedin') )
+		{
+			return false;
+		}
+
+		if( empty($userid) )
+		{
+			$userid = $_SESSION['data']['uid'];
+		}
+
+		// Check CSRF token
+		if( !$this->permission('admin') && !Security::csrfCheck('avatar') )
+		{
+			return json_encode(array('status' => false, 'message' => $this->lang['core']['classes']['user']['upload_err0']));
+		}
+
+        if( !empty($_FILES['newavatar']['tmp_name']) )
+        {
+            $newName = uniqid();
+            $ext = explode('.', $_FILES['newavatar']['name']);
+                $ext = end( $ext );
+                    $ext = strtolower( $ext );
+
+            $avatarDir = BASE_PATH . '/avatars/';
+
+            // Check the file-size does not exceed the specified size
+            if( $_FILES['newavatar']['size'] > $this->config['upload_max'] * 1024 )
+            {
+                return json_encode(array('status' => false, 'message' => $this->lang['core']['classes']['user']['upload_err1']));
+            }
+
+            $formats = array();
+            $formatsMime = array();
+            foreach( explode(',', $this->config['upload_formats']) as $format )
+            {
+            	$format = strtolower(str_replace(' ', '', $format));
+            	$formats[] = $format;
+            	$formatsMime[] = 'image/' . $format;
+            }
+
+            // Get file information
+            $imginfo = getimagesize($_FILES['newavatar']['tmp_name']);
+
+            if( !in_array( $ext, $formats ) && !in_array( $imginfo['mime'], $formatsMime ) )
+            {
+                // delete temp. file
+                unlink($_FILES['newavatar']['tmp_name']);
+                return json_encode(array('status' => false, 'message' => $this->lang['core']['classes']['user']['upload_err2']));
+            }
+
+            // Create the avatar dir if it does not exist
+            if( !file_exists($avatarDir) || !is_dir($avatarDir) )
+            {
+            	mkdir($avatarDir, 0755);
+            }
+
+            // Create the htaccess file if it does not exists.
+            if( !file_exists($avatarDir . '.htaccess') )
+            {
+            	$htaccess = fopen($avatarDir . '.htaccess', 'w');
+            	fwrite($htaccess, 
+'<FilesMatch "(?i)\.jpe?g$">
+	ForceType image/jpeg
+</FilesMatch>
+
+<FilesMatch "(?i)\.gif$">
+	ForceType image/gif
+</FilesMatch>
+
+<FilesMatch "(?i)\.png$">
+	ForceType image/png
+</FilesMatch>
+
+# Disable execution of the following file formats
+AddHandler cgi-script .php .php3 .php4 .php5 .phtml .pl .py .jsp .asp .html .htm .shtml .sh .cgi .js');
+				fclose($htaccess);
+            }
+
+            if( extension_loaded('imagick'))
+            {
+	            // Rebuild the image with imagick to minimize any issues with "evil" code.
+	            $img = new Imagick( $_FILES['newavatar']['tmp_name'] );
+
+	            // create thumbnail is too big
+	            if( $imginfo[0] > $this->config['upload_wsize'] || $imginfo[1] > $this->config['upload_hsize'] )
+	            {
+	                if( $imginfo[0] > $imginfo[1] )
+	                {
+	                    $thumb_width = $this->config['upload_wsize'];
+	                    $thumb_height = 0;
+	                }
+	                else
+	                {
+	                    $thumb_width = 0;
+	                    $thumb_height = $this->config['upload_hsize'];
+	                }
+	                $img->scaleImage($thumb_width, $thumb_height);
+	            }
+
+	            $img->writeImage($avatarDir . $newName . '.' . $ext);
+	            $img->destroy();
+	        }
+	        else
+	        {
+
+			    switch ($imginfo[2]) {
+			        case IMAGETYPE_GIF:
+			            $source = imagecreatefromgif($_FILES['newavatar']['tmp_name']);
+			            break;
+
+			        case IMAGETYPE_JPEG:
+			            $source = imagecreatefromjpeg($_FILES['newavatar']['tmp_name']);
+			            break;
+
+			        case IMAGETYPE_PNG:
+			            $source = imagecreatefrompng($_FILES['newavatar']['tmp_name']);
+			            break;
+			    }
+
+			    $aspect = $imginfo[0] / $imginfo[1];
+			    $thumbnail_aspect = $this->config['upload_wsize'] / $this->config['upload_hsize'];
+
+			    if( $imginfo[0] <= $this->config['upload_wsize'] && $imginfo[1] <= $this->config['upload_hsize'] )
+			    {
+			        $thumbnail_width = $imginfo[0];
+			        $thumbnail_height = $imginfo[1];
+			    }
+			    elseif ($thumbnail_aspect > $aspect)
+			    {
+			        $thumbnail_width = $this->config['upload_hsize'] * $aspect;
+			        $thumbnail_height = $this->config['upload_hsize'];
+			    }
+			    else
+			    {
+			        $thumbnail_width = $this->config['upload_wsize'];
+			        $thumbnail_height = $this->config['upload_wsize'] / $aspect;
+			    }
+
+			    $thumbnail = imagecreatetruecolor($thumbnail_width, $thumbnail_height);
+			    imagecopyresampled($thumbnail, $source, 0, 0, 0, 0, $thumbnail_width, $thumbnail_height, $imginfo[0], $imginfo[1]);
+			    switch ($imginfo[2]) {
+			        case IMAGETYPE_GIF:
+			            imagegif($thumbnail, $avatarDir . $newName . '.' . $ext);
+			            break;
+
+			        case IMAGETYPE_JPEG:
+			            imagejpeg($thumbnail, $avatarDir . $newName . '.' . $ext, 85);
+			            break;
+
+			        case IMAGETYPE_PNG:
+			            imagepng($thumbnail, $avatarDir . $newName . '.' . $ext);
+			            break;
+			    }
+
+			    imagedestroy($source);
+			    imagedestroy($thumbnail);
+	        }
+
+            if( file_exists($avatarDir . $newName . '.' . $ext) )
+            {
+            	$stmt = $this->sql->prepare('SELECT avatar FROM users WHERE id = ?');
+            	$stmt->execute(array(Security::sanitize($userid, 'integer')));
+            	$oldavatar = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            	$stmt->closeCursor();
+
+                // remove old avatar
+                if( !empty($oldavatar[0]['avatar']) && file_exists($avatarDir . $oldavatar[0]['avatar']) )
+                {
+                    unlink($avatarDir . $oldavatar[0]['avatar']);
+                }
+
+                $stmt = $this->sql->prepare('UPDATE users SET avatar = ? WHERE id = ?');
+            	$stmt->execute(array($newName . '.' . $ext, Security::sanitize($userid, 'integer')));
+            	$stmt->fetchAll(PDO::FETCH_ASSOC);
+            	$stmt->closeCursor();
+
+                if( $userid == $_SESSION['data']['uid'] )
+                {
+                	$_SESSION['data']['avatar'] = $newName . '.' . $ext;
+                }
+
+                return json_encode(array('status' => true, 'message' => $this->lang['core']['classes']['user']['upload_success'], 'newname' => $newName . '.' . $ext));
+            }
+            else
+            {
+                return json_encode(array('status' => false, 'message' => $this->lang['core']['classes']['user']['upload_err3']));
+            }
+        }
+        else
+        {
+        	return json_encode(array('status' => false, 'message' => $this->lang['core']['classes']['user']['upload_err4']));
+        }
+    }
 }

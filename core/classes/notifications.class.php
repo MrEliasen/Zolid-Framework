@@ -33,6 +33,11 @@ class Notifications
 			$title = '<strong>' . $title . '</strong>';
 		}
 
+		if( $type == 'error' )
+		{
+			$type = 'danger';
+		}
+
 		$_SESSION['notifications'][$where] = '<div class="alert alert-' . $type . '"><button type="button" class="close" data-dismiss="alert">&#215;</button>' . $title . ' ' . $body . '</div>';
 
 		return true;

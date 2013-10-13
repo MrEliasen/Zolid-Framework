@@ -252,7 +252,14 @@ return array(
 				'settings_error6' => 'The two passwords did not match. Please try again.',
 				'settings_error7' => 'The passwords did not match eachother. Make sure the password is the same in both fields.',
 				'settings_error8' => 'The password you have entered was not correct.',
-				'settings_success' => 'Your account settings and profile has been updated.'
+				'settings_success' => 'Your account settings and profile has been updated.',
+
+				'upload_err0' => 'CSRF token was invalid, please reload the form.',
+				'upload_err1' => 'File size is too large.',
+				'upload_err2' => 'File type not supported.',
+				'upload_err3' => 'Something went wrong while trying to save the image.',
+				'upload_err4' => 'You did not upload any image or maybe the image was too big. Please try again.',
+				'upload_success' => 'Your avatar has been updated.'
 			)
         )
     )

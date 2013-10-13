@@ -1,3 +1,14 @@
+[v 0.1.5.1] - 13th of October, 2013
+---------------------------------------
+ - Fixed a minor bug loading the default language file on install.
+ - Fixed minor forum bug when checking if the user has vied the thread.
+ - Fixed a bug with the sanitation removing allwed html tags when using "string".
+ - Fixed a potential security issue.
+ - Fixed a minor bug when installed in the framework.
+ - Fixed notifications not showing errors correctly.
+ - Added the BASE_PATH constant. It will contain the full path to the base of the system.
+ - Added custom avatar upload system to replace Gravatar.
+
 [v 0.1.5.0] - 7th of October, 2013
 ---------------------------------------
  - Added option to select default group to new sign ups.

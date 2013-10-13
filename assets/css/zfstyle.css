@@ -173,8 +173,8 @@ div.hr{
 }
 
 .byuser{
-	margin-right: 20px;
-	width: 80px;
+	margin-right: 10px;
+	width: 90px;
 }
 
 .htmlsample{
@@ -186,7 +186,6 @@ div.hr{
 	background: #FAFAFA;
 	border: 1px solid #E9E9E9;
 	width: 100%;
-	min-width: 590px;
 	max-width: 1010px;
 	border-radius: 4px;
 }
@@ -196,6 +195,10 @@ div.hr{
 
 .threadpost{
 	margin-bottom: 25px;
+}
+
+.threadavatar{
+	width: 100%;
 }
 
 .pager{
@@ -215,6 +218,14 @@ div.hr{
 	margin-left: 5px;
 	font-size: 16px;
 	display: none;
+}
+
+/*
+	Misc
+*/
+#avatarthumb{
+	max-width: 44px;
+	max-height: 22px;
 }
 
 /* Sticky footer styles
@@ -243,11 +254,27 @@ div.hr{
 	}
 
 /* Lastly, apply responsive CSS fixes as necessary */
+@media (max-width: 1200px) and (min-width: 993px) {
+	.postdetails{
+		width: 89%;
+	}
+}
+
+@media (max-width: 992px) and (min-width: 768px) {
+	.postdetails{
+		width: 85%;
+	}
+}
+
 @media (max-width: 767px) {
-  #footer {
-    margin-left: -20px;
-    margin-right: -20px;
-    padding-left: 20px;
-    padding-right: 20px;
-  }
+	#footer {
+		margin-left: -20px;
+		margin-right: -20px;
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+
+	.byuser{
+		display: none;
+	}
 }

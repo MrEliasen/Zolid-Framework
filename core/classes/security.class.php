@@ -83,7 +83,6 @@ class Security
 		switch($type){
 			case 'string':
                 $config->set('HTML.Allowed', 'a[href|title],b,strong,em,ul,li,ol,pre,code,img[src|title|alt],blockquote,strike,small,br');
-				$data = filter_var( $data, FILTER_SANITIZE_STRING );
 				break;
 				
 			case 'purestring':

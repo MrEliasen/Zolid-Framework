@@ -85,10 +85,10 @@ $threads = $this->getThread();
 					$delete = '<button class="btn btn-sm btn-danger showtooltip" title="Delete Post?" data-placement="left" data-toggle="popover" data-title="<b>Are you sure?</b>" data-content="<button class=\'btn btn-danger btn-xs funcdelete\' data-id=\'' . $thread['id'] . '\' data-action=\'deletepost\'>Yes I\'m sure</button> <button class=\'btn btn-xs btn-info closepo\'>No</button>"><i class="glyphicon glyphicon-trash"></i></button>';
 				}
 
-				$avatar = 'http://www.gravatar.com/avatar/' . md5($this->decryptData($thread['email'])) . '?size=80&amp;d=mm&amp;r=pg';
+				$avatar = $this->avatarurl($thread['avatar']);
 				echo '<div id="post' . $thread['id'] . '" class="threadpost col-lg-12">
 						<div class="byuser pull-left">
-							<img src="' . $avatar . '" alt="track beast">
+							<img src="' . $avatar . '" alt="track beast" class="threadavatar">
 						</div>
 						<div class="postdetails pull-left">
 							<div class="postpadding">

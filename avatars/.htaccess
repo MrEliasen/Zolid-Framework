@@ -1,0 +1,14 @@
+<FilesMatch "(?i)\.jpe?g$">
+	ForceType image/jpeg
+</FilesMatch>
+
+<FilesMatch "(?i)\.gif$">
+	ForceType image/gif
+</FilesMatch>
+
+<FilesMatch "(?i)\.png$">
+	ForceType image/png
+</FilesMatch>
+
+# Disable execution of the following file formats
+AddHandler cgi-script .php .php3 .php4 .php5 .phtml .pl .py .jsp .asp .html .htm .shtml .sh .cgi .js

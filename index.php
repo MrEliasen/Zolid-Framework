@@ -10,4 +10,5 @@
  */
 
 // Get the ball rolling!
+define('BASE_PATH', dirname(__FILE__));
 require('core/init.php');

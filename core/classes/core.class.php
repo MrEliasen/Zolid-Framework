@@ -40,6 +40,7 @@ class Core
         {
             $this->generateBaseUrl();
             $this->config['site_name'] = 'Zolid Framework';
+            $this->lang = include( CORE_PATH . '/locale/default.php' );
             return false;
         }
         else
@@ -69,6 +70,29 @@ class Core
         else
         {
             $this->lang = include( CORE_PATH . '/locale/default.php' );
+        }
+
+        $avatarDir = BASE_PATH . '/avatars/';
+        if( !file_exists($avatarDir) || !is_dir($avatarDir) )
+        {
+            mkdir($avatarDir, 0755);
+            $htaccess = fopen($avatarDir . '/.htaccess', 'w');
+            fwrite($htaccess, '<FilesMatch "(?i)\.jpe?g$">' .
+                            'ForceType image/jpeg' .
+                        '</FilesMatch>' .
+
+                        '<FilesMatch "(?i)\.gif$">' .
+                            'ForceType image/gif' .
+                        '</FilesMatch>' .
+
+                        '<FilesMatch "(?i)\.png$">' .
+                            'ForceType image/png' .
+                        '</FilesMatch>' .
+
+                        '# Disable execution of the following file formats' .
+                        'AddHandler cgi-script .php .php3 .php4 .php5 .phtml .pl .py .jsp .asp .html .htm .shtml .sh .cgi .js' .
+                        'Options -ExecCG');
+            fclose($htaccess);
         }
     }
     

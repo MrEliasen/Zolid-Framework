@@ -167,6 +167,10 @@ class Template extends Admin
             case 'saveforumorder':
                 $output = $this->adminUpdateForumOrder();
                 break;
+
+            case 'uploadavatar':
+                $output = $this->uploadAvatar();
+                break;
         }
 
         if( !empty($output) )
@@ -911,7 +915,7 @@ $config = array(
         CREATE TABLE IF NOT EXISTS `settings` (
           `key` varchar(25) NOT NULL,
           `value` varchar(100) NOT NULL,
-          `title` varchar(20) NOT NULL,
+          `title` varchar(25) NOT NULL,
           `type` enum('text','select') NOT NULL DEFAULT 'text',
           `options` text NOT NULL,
           PRIMARY KEY (`key`)
@@ -923,6 +927,7 @@ $config = array(
           `email` blob NOT NULL,
           `email_hash` char(128) NOT NULL,
           `password` char(128) NOT NULL,
+          `avatar` varchar(20) NOT NULL,
           `local` varchar(5) NOT NULL,
           `membergroup` int(10) unsigned NOT NULL,
           `reset_token` char(64) NOT NULL,
@@ -947,7 +952,11 @@ $config = array(
                                         ("site_email", ?, "Site Email", "text", ""),
                                         ("default_group", 1, "Default Group (id)", "text", ""),
                                         ("seo_urls", ?, "Friendly URLs", "select", "{\"On\":1, \"Off\":0}"),
-                                        ("timezone", ?, "System Timezone", "select", ?)
+                                        ("timezone", ?, "System Timezone", "select", ?),
+                                        ("upload_max", "204800", "Max avatar file size (bytes)", "text", ""),
+                                        ("upload_hsize", "200", "Avatar Height (pixels)", "text", ""),
+                                        ("upload_wsize", "200", "Avatar Width (pixels)", "text", ""),
+                                        ("upload_formats", "jpg, jpeg, png, gif", "Accepted avatar formats", "text", "")
                                     ON 
                                         DUPLICATE KEY 
                                     UPDATE 

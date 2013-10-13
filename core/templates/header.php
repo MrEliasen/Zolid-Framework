@@ -74,7 +74,7 @@ if(!defined('CORE_PATH')){
 												<li class="divider-vertical"></li>
 												<li class="dropdown">
 													<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-														<img src="http://www.gravatar.com/avatar/' . $_SESSION['data']['avatar'] . '?size=22&amp;d=mm&amp;r=pg" alt="">
+														<img src="'. $this->avatarurl($_SESSION['data']['avatar']) . '" alt="" id="avatarthumb">
 														' . $_SESSION['data']['username'] . ' <b class="caret"></b>
 													</a>
 													<ul class="dropdown-menu">
