@@ -1,0 +1,33 @@
+<div class="row">
+  	<div class="col-lg-12">
+	    <h1>Reset Password <small>Forgot your login details?</small></h1>
+	    <?php
+	    	$bc = array(
+	    		'Account' => '#',
+	    		'Reset Password' => 'users/resetlogin'
+	    	);
+	    	echo $this->breadcrumb($bc);
+	    ?>
+	</div>
+
+  	<div class="col-lg-6">
+	    <?php echo Notifications::show(); ?>
+	    <p>You will receive an email containing a reset link which you much follow to reset your password.</p>
+		<form id="form_signup" method="post" action="<?php echo $this->controller->makeUrl('users/resetlogin'); ?>" class="form-horizontal" role="form">
+			<div class="form-group">
+			    <label for="account" class="col-lg-2 control-label">Email Address</label>
+			    <div class="col-lg-10">
+			      	<input type="text" class="form-control" name="reset_email" id="account" placeholder="Account E-mail" value="<?php echo Misc::data('reset_account', 'post'); ?>">
+			    </div>
+			</div>
+
+			<div class="form-group">
+			    <div class="col-xs-offset-2 col-xs-10">
+			      	<button type="submit" class="btn btn-default btn-block">Submit</button>
+			    </div>
+			</div>
+			<input type="hidden" name="action" value="resetlogin">
+			<input type="hidden" name="token" value="<?php echo Security::newToken('resetlogin'); ?>">
+		</form>
+  	</div>
+</div><!-- /.row -->

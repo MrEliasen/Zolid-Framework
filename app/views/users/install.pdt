@@ -1,0 +1,476 @@
+<style>
+	.required{
+		color: #f10000;
+		font-weight: bold;
+		font-size: 120%;
+		float: right;
+	}
+</style>
+
+<div class="row">
+  	<div class="col-lg-12">
+
+<?php
+if( empty($_GET['step']) || $_GET['step'] == 1):
+	$continue = true;
+?>
+
+		<h1>Install <small>Step 1</small></h1>
+		<?php
+	    	$bc = array(
+	    		'Installer' => 'users/install',
+	    		'Step 1' => 'users/install&step=1'
+	    	);
+	    	echo $this->breadcrumb($bc);
+	    ?>
+		<div class="col-lg-6">
+			<table class="table table-striped">
+				<tr>
+					<td colspan="2"><strong>General</strong></td>
+				</tr>
+				<tr>
+					<td>PHP Version 5.3.0 or newer</td>
+					<td style="text-align: right;">
+						<?php
+							if( version_compare(PHP_VERSION, '5.3') < 0 )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><strong>Extensions</strong></td>
+				</tr>
+				<tr>
+					<td>Required Extension 'mysql'</td>
+					<td style="text-align: right;">
+						<?php
+							if( !extension_loaded('mysql') )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td>Required Extension 'json'</td>
+					<td style="text-align: right;">
+						<?php
+							if( !extension_loaded('json') )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td>Required Extension 'pdo_mysql'</td>
+					<td style="text-align: right;">
+						<?php
+							if( !extension_loaded('pdo_mysql') )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td>Required Extension 'session'</td>
+					<td style="text-align: right;">
+						<?php
+							if( !extension_loaded('session') )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td>Required Extension 'mcrypt'</td>
+					<td style="text-align: right;">
+						<?php
+							if( !extension_loaded('mcrypt') )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td>Required Extension 'Imagick' or 'GD'</td>
+					<td style="text-align: right;">
+						<?php
+							if( !extension_loaded('imagick') && !extension_loaded('gd') )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><strong>Functions/Settings</strong></td>
+				</tr>
+				<tr>
+					<td>Required Function 'crypt'</td>
+					<td style="text-align: right;">
+						<?php
+							if( !function_exists('crypt') )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td>Required Functions 'fopen', 'fclose' &amp; 'fwrite'</td>
+					<td style="text-align: right;">
+						<?php
+							if( !function_exists('fopen') || !function_exists('fclose') || !function_exists('fwrite') )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td>Required Setting 'magic_quotes_gpc' = disabled</td>
+					<td style="text-align: right;">
+						<?php
+							if( get_magic_quotes_gpc() )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><strong>Write Permissions</strong></td>
+				</tr>
+				<tr>
+					<td>Write Permissions: '/'</td>
+					<td style="text-align: right;">
+						<?php
+							if( !is_writable(ROOTPATH) )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td>Write Permissions: '/config/' (and files within)</td>
+					<td style="text-align: right;">
+						<?php
+							foreach( scandir(ROOTPATH . DS . 'config') as $file )
+							{
+								if( $file == '.' || $file == '..' )
+								{
+									continue;
+								}
+
+								if( !is_writable(ROOTPATH . DS . 'config' . DS . $file) )
+								{
+									$continue = false;
+								}
+							}
+
+							if( !$continue || !is_writable(ROOTPATH . DS . 'config') )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td>Write Permissions: '/uploads/avatars/'</td>
+					<td style="text-align: right;">
+						<?php
+							if( !is_writable(ROOTPATH . DS . 'uploads' . DS . 'avatars') )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td>Write Permissions: /config/</td>
+					<td style="text-align: right;">
+						<?php
+							if( !is_writable(ROOTPATH . DS . 'config') )
+							{
+								$continue = false;
+								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
+							}
+							else
+							{
+								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
+							}
+						?>
+					</td>
+				</tr>
+			</table>
+			<hr>
+			<?php
+				if( $continue )
+				{
+					echo '<a href="' . $this->controller->makeUrl('users/install') . '&amp;step=2" class="btn btn-primary btn-block">Continue Installation</a>';
+				}
+				else
+				{
+					echo '<a href="' . $this->controller->makeUrl('users/install') . '&amp;step=1" class="btn btn-warning btn-block">Test Again</a>';
+				}
+			?>
+		</div>
+
+<?php
+	elseif( $_GET['step'] == 2):
+?>
+
+		<h1>Install <small>Step 2</small></h1>
+		<?php
+	    	$bc = array(
+	    		'Installer' => 'users/install',
+	    		'Step 1' => 'users/install&step=1',
+	    		'Step 2' => 'users/install&step=2'
+	    	);
+	    	echo $this->breadcrumb($bc);
+	    ?>
+
+		<form class="form-horizontal" method="ajax" action="#" autocomplete="off">
+			<div class="col-lg-6">
+				<legend>Database Settings</legend>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_sqlhost">Host<span class="required">*</span></label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_sqlhost" name="install_sqlhost" placeholder="Mysql Host (localhost)" value="<?php echo ( Misc::data('install_sqlhost', 'post') == null ? 'localhost' : Misc::data('install_sqlhost', 'post') ); ?>">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_sqlport">Port<span class="required">*</span></label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_sqlport" name="install_sqlport" placeholder="Mysql Port (3306)" value="<?php echo ( Misc::data('install_sqlport', 'post') == null ? '3306' : Misc::data('install_sqlport', 'post') ); ?>">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_sqldbname">Database Name<span class="required">*</span></label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_sqldbname" name="install_sqldbname" placeholder="Database Name" value="<?php echo Misc::data('install_sqldbname', 'post'); ?>">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_sqlprefix">Table Prefix</label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_sqlprefix" name="install_sqlprefix" placeholder="Database Name" value="<?php echo Misc::data('install_sqlprefix', 'post'); ?>">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_sqluser">User<span class="required">*</span></label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_sqluser" name="install_sqluser" placeholder="User" value="<?php echo Misc::data('install_sqluser', 'post'); ?>">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_sqlpass">Password<span class="required">*</span></label>
+					<div class="col-lg-8">
+						<input class="form-control" type="password" id="install_sqlpass" name="install_sqlpass" placeholder="Password" value="<?php echo Misc::data('install_sqlpass', 'post'); ?>">
+					</div>
+				</div>
+                
+				<legend>Site Settings</legend>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_baseurl">Base Url<span class="required">*</span></label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_baseurl" name="install_baseurl" placeholder="eg.<?php echo $this->controller->makeUrl(); ?>" value="<?php echo ( Misc::data('install_baseurl', 'post') == null ? str_replace('http://', '', substr($this->controller->makeUrl(), 0 , -1)) : Misc::data('install_baseurl', 'post') ); ?>">
+                        <span class="help-block">This is the url (without protocol and trailing slash) to where this framework is being installed. Eg. "you-domain.com/users" or "you-domain.com".<br>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_urlprotocol">URL Protocol<span class="required">*</span></label>
+					<div class="col-lg-8">
+						<select class="form-control" name="install_urlprotocol">
+							<option value="http">HTTP</option>
+							<option value="https">HTTPS</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_sitetitle">Site Name<span class="required">*</span></label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_sitetitle" name="install_sitetitle" placeholder="eg. Zolid Framework">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_mailsfrom">Site Email<span class="required">*</span></label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_mailsfrom" name="install_mailsfrom" placeholder="eg. hello@domain.com">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_timezone">Site Timezone<span class="required">*</span></label>
+					<div class="col-lg-8">
+						<select id="install_timezone" class="form-control" name="install_timezone">
+						<?php
+							foreach( Misc::timezones(true) as $key => $value )
+							{
+								echo '<option value="' . $value . '" ' . ($value == 'Europe/Copenhagen' ? 'selected="selected"' : '') . '>' . $key . '</option>';
+							}
+						?>
+						</select>
+					</div>
+				</div>
+                
+				<legend>SMTP Settings</legend>
+                <p>You can leave this blank to use PHP mail instead.</p>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_smtphost">Host</label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_smtphost" name="install_smtphost" placeholder="eg. mail.domain.com">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_smtpport">Port</label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_smtpport" name="install_smtpport" placeholder="25 is default">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_smtpuser">User</label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_smtpuser" name="install_smtpuser" placeholder="">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_smtppass">Password</label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_smtppass" name="install_smtppass" placeholder="">
+					</div>
+				</div>
+        
+	        <div class="clearfix"></div>
+
+	        <button type="submit" class="btn btn-lg btn-block btn-primary">Install Framework</button>
+
+			<input type="hidden" name="action" value="install">
+			<input type="hidden" name="token" value="<?php echo Security::newToken('install'); ?>">
+		</form>
+
+<?php
+	elseif( $_GET['step'] == 3):
+?>
+
+		<h1>Install <small>Step 3</small></h1>
+		<?php
+	    	$bc = array(
+	    		'Installer' => 'users/install',
+	    		'Step 1' => 'users/install&step=1',
+	    		'Step 2' => 'users/install&step=2',
+	    		'Step 3' => 'users/install&step=3'
+	    	);
+	    	echo $this->breadcrumb($bc);
+	    ?>
+
+		<form class="form-horizontal" method="ajax" action="#" autocomplete="off">
+			<div class="col-lg-6">
+				<legend>Admin Account</legend>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_adminuser">Username</label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_adminuser" name="install_adminuser">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_adminemail">Email</label>
+					<div class="col-lg-8">
+						<input class="form-control" type="text" id="install_adminemail" name="install_adminemail">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="install_adminpass">Password</label>
+					<div class="col-lg-8">
+						<input class="form-control" type="password" id="install_adminpass" name="install_adminpass">
+					</div>
+				</div>
+			</div>
+        
+	        <div class="clearfix"></div>
+
+	        <div class="col-lg-6 control-label">
+	            <button type="submit" class="btn btn-lg btn-block btn-primary">Finish Installation</button>
+	        </div>
+
+			<input type="hidden" name="action" value="createadmin">
+			<input type="hidden" name="token" value="<?php echo Security::newToken('createadmin'); ?>">
+		</form>
+
+<?php
+endif;
+?>
+
+	</div>
+</div>

@@ -1,1 +1,5 @@
+<<<<<<< HEAD
+{"version": "0.1.6.0","message": "Almost a complete system rewrite.","date": 1388493784,"priority": 1}
+=======
 {"version": "0.1.5.1","message": "Adds several bug fixes and a new avatar system.","date": 1381688586,"priority": 1}
+>>>>>>> 084954ee7d636971399683387ec585aecb7d4935

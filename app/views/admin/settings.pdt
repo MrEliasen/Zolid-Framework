@@ -1,0 +1,75 @@
+<div class="row">
+  	<div class="col-lg-12">
+	    <h1>Framework Settings</h1>
+	    <?php
+	    	$bc = array(
+	    		'Admin' => 'admin/home',
+	    		'Settings' => 'admin/settings'
+	    	);
+	    	echo $this->breadcrumb($bc);
+	    ?>
+  	</div>
+	
+	<?php
+		$c = 0;
+		foreach( $this->controller->getConfigs() as $file => $settings )
+		{
+			if( empty($settings) )
+			{
+				continue;
+			}
+
+			echo '<div class="col-md-6">
+					<h2 class="text-center">' . ucfirst($file) . '</h2>
+					<form class="form-horizontal" role="form" method="ajax">';
+
+					foreach( $settings as $setting => $value )
+					{
+						if( is_array($value) )
+						{
+							continue;
+						}
+
+						echo '<div class="form-group">
+							    <label for="' . $setting . '" class="col-lg-3 control-label">' . ucwords(str_replace('_', ' ', $setting)) . '</label>
+							    <div class="col-lg-9">';
+
+							    switch( true )
+							    {
+							    	case ( is_bool($value) ):
+							      		echo '<select class="form-control" name="settings[' . $setting . ']">
+												<option value="true" ' . ( $value === true ? 'selected' : '' ) . '>True</option>
+												<option value="false" ' . ( $value === false ? 'selected' : '' ) . '>False</option>
+							      			  </select>';
+							      		break;
+
+							    	default:
+							      		echo '<input type="' . ( $setting == 'smtp_pass' ? 'password' : 'text' ) . '" class="form-control" name="settings[' . $setting . ']" id="' . $setting . '" value="' . $value . '">';
+							      		break;
+							    }
+
+						echo '</div>
+							</div>';
+					}
+
+				echo '<div class="col-lg-offset-3 col-lg-9">
+							<div class="form-group">
+								<button class="btn btn-default btn-block">Save Settings</button>
+							</div>
+						</div>
+
+						<input type="hidden" name="action" value="saveconfig">
+						<input type="hidden" name="settings_file" value="' . $file . '">
+						<input type="hidden" name="token" value="' . Security::newToken('setting_' . $file) . '">
+					</form>
+				</div>';
+
+			$c++;
+
+			if( !($c % 2) )
+			{
+				echo '<div class="clearfix"></div><hr>';
+			}
+		}
+	?>
+</div>

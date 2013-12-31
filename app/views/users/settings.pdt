@@ -1,0 +1,70 @@
+<?php
+	if( !$this->controller->loggedin )
+	{
+		$this->redirect('users/dashboard');
+	}
+?>
+<div class="row">
+  	<div class="col-lg-12">
+	    <h1>Account Settings<small>Update your account</small></h1>
+	    <?php
+	    	$bc = array(
+	    		'Account' => '#',
+	    		'Settings' => 'users/settings'
+	    	);
+	    	echo $this->breadcrumb($bc);
+	    ?>
+	<?php echo Notifications::show(); ?>
+  	<div class="col-lg-12">
+		<div class="row">
+			<div class="col-lg-5">
+				<h3>Change Password</h3>
+				<form method="post" action="<?php echo $this->controller->makeUrl('users/settings'); ?>" class="form-horizontal" role="form">
+		            <div class="form-group">
+			            <input class="form-control input-xlarge" type="password" name="newpass_current" placeholder="Your Current Password" />
+		            </div>
+		            <div class="form-group">
+				        <input class="form-control input-xlarge" type="password" name="newpass_password" placeholder="New Password">
+					</div>
+		            <div class="form-group">
+	                	<button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>
+	                </div>
+	                <input type="hidden" name="action" value="updatepassword">
+	            </form>
+				
+				<hr>
+
+				<h3>Change E-mail <small>( <?php echo $this->controller->secureEmail(); ?> )</small></h3>
+				<form method="post" action="<?php echo $this->controller->makeUrl('users/settings'); ?>" class="form-horizontal" role="form">
+		            <div class="form-group">
+			            <input class="form-control input-xlarge" type="password" name="newemail_password" placeholder="Your Current Password" />
+		            </div>
+		            <div class="form-group">
+				        <input class="form-control input-xlarge" type="text" name="newemail_email" placeholder="Your new e-mail address">
+					</div>
+
+		            <div class="form-group">
+	                	<button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>
+	                </div>
+	                <input type="hidden" name="action" value="updateemail">
+	            </form>
+			</div>
+			
+			<div class="col-lg-offset-1 col-lg-3 text-center">
+				<h3>Your Avatar</h3>
+				<img src="<?php echo $this->controller->avatarurl(Session::get('user/avatar')); ?>" alt="Your Avatar" class="img-thumbnail">
+				<hr>
+				<form method="post" action="<?php echo $this->controller->makeUrl('users/settings'); ?>" class="form-horizontal" role="form" enctype="multipart/form-data">
+		            <div class="form-group">
+			            <input class="form-control input-xlarge" type="file" name="newavatar_image">
+		            </div>
+		            <div class="form-group">
+	                	<button class="btn btn-primary btn-lg btn-block" type="submit">Update</button>
+	                </div>
+	                <input type="hidden" name="action" value="updateavatar">
+	            </form>
+			</div>
+
+		</div>
+	</div>
+</div>

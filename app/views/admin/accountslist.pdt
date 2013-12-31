@@ -1,0 +1,53 @@
+<?php 
+	$list = $this->controller->getAccountsList();
+?>
+<div class="row">
+  	<div class="col-lg-12">
+	    <h1>Accounts List <small>Click on a username to edit the respective account.!</small></h1>
+	    <?php
+	    	$bc = array(
+	    		'Admin' => 'admin/home',
+	    		'Accounts List' => 'admin/accountslist'
+	    	);
+	    	echo $this->breadcrumb($bc);
+
+	    	echo Notifications::show();
+
+	    	echo $this->controller->showPagination(count($list), 15);
+	    ?>
+
+	    <table class="table table-hover">
+	    	<thead>
+	    		<tr>
+	    			<th>#</th>
+	    			<th>Username</th>
+	    			<th class="text-center">Online</th>
+	    			<th>Actions</th>
+	    		</tr>
+	    	</thead>
+			<?php
+			foreach( $this->controller->getAccountsList() as $user )
+			{
+				echo '<tr>
+						<td>' . $user['id'] . '</td>
+						<td>' . $user['username'] . '</td>
+						<td class="text-center">' . ( !$user['online'] ? '<span class="label label-default">No</span>' : '<span class="label label-success">Yes</span>' ) . '</td>
+						<td>
+							<div class="btn-group">
+							    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							        Actions <span class="caret"></span>
+							    </button>
+							    <ul class="dropdown-menu" role="menu">
+							        <li><a href="' . $this->controller->makeUrl('users/profile') . '&amp;id=' . $user['id'] . '"><i class="glyphicon glyphicon-user"></i> View Profile</a></li>
+							        <li><a href="' . $this->controller->makeUrl('admin/editaccount') . '&amp;id=' . $user['id'] . '"><i class="glyphicon glyphicon-cog"></i> Edit Account</a></li>
+							        <li class="divider"></li>
+							        <li><a href="' . $this->controller->makeUrl('admin/deleteaccount') . '&amp;id=' . $user['id'] . '"><i class="glyphicon glyphicon-trash"></i> Delete Account</a></li>
+							    </ul>
+							</div>
+						</td>
+					</tr>';
+			}
+			?>
+		</table>
+  	</div>
+</div>

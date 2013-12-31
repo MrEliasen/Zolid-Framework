@@ -1,0 +1,8 @@
+<div class="row">
+  	<div class="col-lg-12">
+	    <h1>404 <small>Page not found!</small></h1>
+	    <pre>
+	    <?php print_r($_SESSION); ?>
+	    </pre>
+	</div>
+</div>

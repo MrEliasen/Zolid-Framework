@@ -1,0 +1,83 @@
+<?php
+	$stats = $this->controller->getStatistics();
+?>
+<div class="row">
+  	<div class="col-lg-12">
+	    <h1>Admin Panel <small>Welcome!</small></h1>
+	    <?php
+	    	$bc = array(
+	    		'Admin' => 'admin/home'
+	    	);
+	    	echo $this->breadcrumb($bc);
+	    ?>
+  	</div>
+
+  	<div class="col-lg-12">
+  		<p>There are currently <strong><?php echo $stats['usertotal']; ?></strong> registered users, where of <strong><?php echo $stats['userstoday']; ?></strong> signed up today.</p>
+  		<hr>
+	</div>
+
+  	<div class="col-lg-4">
+  		<h2 class="text-center">Framework Version</h2>
+  		<table class="table">
+            <tbody>
+		  	<?php
+		  		$version = $this->controller->checkVersion();
+
+		  		echo '<tr>
+	            		<td style="min-width: 160px;"><strong>Current:</strong></td>
+	            		<td>' . $version['current'] . '</td>
+	            	</tr>
+	            	<tr>
+	            		<td><strong>Latest:</strong></td>
+	            		<td>' . $version['latest'] . '</td>
+	            	</tr>';
+
+			    if( $version['upgrade'] )
+			    {
+			    	switch( $version['priority'] )
+                    {
+                        case 3:
+                            $priority = '<span class="label label-danger">Critial</span>';
+                            break;
+
+                        case 2:
+                            $priority = '<span class="label label-warning">Medium</span>';
+                            break;
+                            
+                        default:
+                        case 1:
+                            $priority = '<span class="label label-info">Normal</span>';
+                            break;
+                    }
+
+			        echo '<tr>
+			                <td><strong>Update Note:</strong></td>
+			                <td>' . $version['message'] . '</td>
+			            </tr>
+			            <tr>
+			                <td><strong>Update Priority:</strong></td>
+			                <td>' . $priority . '</td>
+			            </tr>
+			            <tr>
+			                <td><strong>Update Available:</strong></td>
+			                <td><a href="https://github.com/MrEliasen/Zolid-Framework/archive/master.zip">Download Latest Version</a></td>
+			            </tr>';
+			    }
+			    else
+			    {
+			        echo '<tr>
+			                <td colspan="2" class="text-center">Up To Date <i class="glyphicon glyphicon-ok"></i></td>
+			            </tr>';
+			    }
+		    ?>
+            </tbody>
+        </table>
+    </div>
+
+  	<div class="col-lg-4">
+  		<h2 class="text-center">Options</h2>
+  		<a href="<?php echo $this->controller->makeUrl('admin/accountslist'); ?>" class="btn btn-default btn-block">View Account List</a>
+  		<a href="<?php echo $this->controller->makeUrl('admin/settings'); ?>" class="btn btn-default btn-block">Framework Settings</a>
+  	</div>
+</div>

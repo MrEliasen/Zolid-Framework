@@ -1,0 +1,19 @@
+<?php
+	if( !$this->controller->loggedin )
+	{
+		$this->redirect('users/home');
+	}
+?>
+
+<div class="row">
+  	<div class="col-lg-12">
+	    <h1>Dashboard <small>Welcome back!</small></h1>
+	    <?php
+	    	$bc = array(
+	    		'Dashboard' => '#'
+	    	);
+	    	echo $this->breadcrumb($bc);
+	    ?>
+		<?php echo Notifications::show(); ?>
+	</div>
+</div>

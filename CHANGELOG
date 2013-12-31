@@ -1,3 +1,7 @@
+[v 0.1.6.0] - 31st of December, 2013
+---------------------------------------
+ - Almost complete rewrite of the system.
+
 [v 0.1.5.1] - 13th of October, 2013
 ---------------------------------------
  - Fixed a minor bug loading the default language file on install.

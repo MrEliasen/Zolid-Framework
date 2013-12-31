@@ -1,0 +1,38 @@
+<?php 
+	$account = $this->controller->getAccount(Misc::data('id', 'get'));
+?>
+<div class="row">
+  	<div class="col-lg-12">
+	    <h1>Edit Account <small><?php echo $account['username']; ?></small></h1>
+	    <?php
+	    	$bc = array(
+	    		'Admin Panel' => 'admin/home',
+	    		'Accounts List' => 'admin/accountslist',
+	    		'Edit Account' => '#'
+	    	);
+	    	echo $this->breadcrumb($bc);
+	    ?>
+  		<?php echo Notifications::show(); ?>
+  	</div>
+
+  	<div class="col-lg-6">
+		<form method="post" action="<?php echo $this->controller->makeUrl('admin/editaccount'); ?>&id=<?php echo Misc::data('id', 'get'); ?>" role="form">
+            <div class="form-group">
+	            <input class="form-control input-xlarge" type="password" name="updateaccount_current" placeholder="Your Own Admin Password" />
+            </div>
+
+            <hr>
+
+            <div class="form-group">
+		        <input class="form-control input-xlarge" type="text" name="updateaccount_email" placeholder="Update E-Mail Address" value="<?php echo $account['email']; ?>">
+			</div>
+            <div class="form-group">
+		        <input class="form-control input-xlarge" type="password" name="updateaccount_pass" placeholder="Update Account Password (Leave blank for no change)">
+			</div>
+            <div class="form-group">
+            	<button class="btn btn-primary btn-lg btn-block" type="submit">Update Account</button>
+            </div>
+            <input type="hidden" name="action" value="updateaccount">
+        </form>
+	</div>
+</div>

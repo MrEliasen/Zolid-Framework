@@ -1,0 +1,10 @@
+<h2>Welcome to {{site_name}}!</h2>
+
+<p>You are almost ready to use your new account, you just need to confirm this email is reachable by clicking the activation link below:<br>
+<br>
+Activation Link: <a href="{{activate_url}}">{{activate_url}}</a></p>
+
+<p>Just for your information, the account was created from IP: {{ip_address}}, on {{email_date}} @ {{email_time}}.</p>
+
+<p>Kind Regards,<br />
+{{site_name}}</p>

@@ -23,7 +23,7 @@
             "#27b30f"
         ],
         password_test = function () {
-            if( !$('#form_signup').length ){
+            if( !$('#password').length || !$('.password_strength').length ){
                 return false;
             }
             
