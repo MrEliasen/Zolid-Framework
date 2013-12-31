@@ -30,13 +30,13 @@ class users_install extends AppController
 			);
 		}
 
-		if( strlen(Misc::data('install_adminuser')) > Configure::get('users.max_username_length') )
+		if( strlen(Misc::data('install_adminuser')) > Configure::get('users/max_username_length') )
 		{
 			return array(
 				'status' => false,
 				'message_type' => 'error',
 				'message_title' => '',
-				'message_body' => 'Your username cannot be longer than ' . Configure::get('users.max_username_length') . ' characters'
+				'message_body' => 'Your username cannot be longer than ' . Configure::get('users/max_username_length') . ' characters'
 			);
 		}
 
@@ -60,13 +60,13 @@ class users_install extends AppController
 			);
 		}
 
-		$password = password_hash(Misc::data('install_adminpass'), PASSWORD_BCRYPT, array('cost' => Configure::get('security.hash_cost') ));
+		$password = password_hash(Misc::data('install_adminpass'), PASSWORD_BCRYPT, array('cost' => Configure::get('security/hash_cost') ));
 		
 		// Make the account an admin account
-		$permissions = Configure::get('users.permissions');
+		$permissions = Configure::get('users/permissions');
 		$permissions['admin'] = true;
 
-		$stmt = $this->model->connection->prepare('INSERT INTO ' . Configure::get('database.prefix') . 'accounts SET username = :user, email = :email, email_hash = :emailhash, password = :passwd, permissions = :perms');
+		$stmt = $this->model->connection->prepare('INSERT INTO ' . Configure::get('database/prefix') . 'accounts SET username = :user, email = :email, email_hash = :emailhash, password = :passwd, permissions = :perms');
 		$stmt->bindValue(':user', Security::sanitize(Misc::data('install_adminuser'), 'username'), PDO::PARAM_STR);
 		$stmt->bindValue(':email', Security::encryptData(Misc::data('install_adminemail')), PDO::PARAM_STR);
 		$stmt->bindValue(':emailhash', Security::hashEmail(Misc::data('install_adminemail')), PDO::PARAM_STR);
