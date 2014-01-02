@@ -13,7 +13,7 @@
 define('DS', DIRECTORY_SEPARATOR);
 
 // Set the Zolid-WHPS version. [Major].[Minor].[Revision].[Patch]
-define('ZF_VERSION', '1.6.0.0');
+define('ZF_VERSION', '0.1.6.0');
 
 // Check if the version of PHP running on the server is new enough
 if( version_compare(PHP_VERSION, '5.3.0', '<') )
