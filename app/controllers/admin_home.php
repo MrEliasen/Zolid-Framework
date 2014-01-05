@@ -36,10 +36,11 @@ class admin_home extends AppController
 	public function checkVersion()
     {
         $output = array(
-            'current' => ZF_VERSION,
+            'current' => '0.1.6.0',
             'latest' => 'Unknown',
             'upgrade' => false,
             'release' => null,
+            'priority' => 0,
             'message' => ''
         );
 
@@ -58,6 +59,7 @@ class admin_home extends AppController
 	            $output['latest'] = Security::sanitize($versiondata['version'], 'mixedint');
 	            $output['release'] = Security::sanitize($versiondata['date'], 'integer');
 	            $output['message'] = Security::sanitize($versiondata['message'], 'string');
+	            $output['priority'] = Security::sanitize($versiondata['priority'], 'string');
             }
             else
             {
