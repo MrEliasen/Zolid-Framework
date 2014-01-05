@@ -277,6 +277,11 @@ class users_settings extends AppController
 
             $avatarDir = ROOTPATH . DS . 'uploads' . DS . 'avatars' . DS;
 
+            if( !is_dir($avatarDir) )
+            {
+            	@mkdir($avatarDir, 0755, true);
+            }
+
             // Check the file-size does not exceed the specified size
             if( $_FILES['newavatar_image']['size'] > Configure::get('users/avatar_max_size') * 1024 )
             {
