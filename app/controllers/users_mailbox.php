@@ -4,8 +4,8 @@
  *  https://github.com/MrEliasen/Zolid-Framework
  *  
  *  @author 	Mark Eliasen (mark.eliasen@zolidsolutions.com)
- *  @copyright 	Copyright (c) 2013, Mark Eliasen
- *  @version    0.1.6.0
+ *  @copyright 	Copyright (c) 2014, Mark Eliasen
+ *  @version    0.1.6.1
  *  @license 	http://opensource.org/licenses/MIT MIT License
  */
 
@@ -49,9 +49,9 @@ class users_mailbox extends AppController
 		}
 
 		$stmt = $this->model->connection->prepare('INSERT INTO ' . Configure::get('database/prefix') . 'mailbox 
-																(sender, recipent, message, date)
+																(recipent, sender, message, date)
 															VALUES
-																(( SELECT id FROM ' . Configure::get('database/prefix') . 'accounts WHERE username = :to ), :from, :msg, :date)');
+																(( SELECT id FROM ' . Configure::get('database/prefix') . 'accounts WHERE username = :to LIMIT 1), :from, :msg, :date)');
 		$stmt->bindValue(':from', Security::sanitize(Session::get('user/id'), 'integer'), PDO::PARAM_INT);
 		$stmt->bindValue(':date', time(), PDO::PARAM_INT);
 		$stmt->bindValue(':to', Security::sanitize(Misc::data('newmail_recipent', 'post'), 'purestring'), PDO::PARAM_STR);

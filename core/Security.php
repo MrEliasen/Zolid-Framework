@@ -4,8 +4,8 @@
  *  https://github.com/MrEliasen/Zolid-Framework
  *  
  *  @author     Mark Eliasen (mark.eliasen@zolidsolutions.com)
- *  @copyright  Copyright (c) 2013, Mark Eliasen
- *  @version    0.1.6.0
+ *  @copyright  Copyright (c) 2014, Mark Eliasen
+ *  @version    0.1.6.1
  *  @license    http://opensource.org/licenses/MIT MIT License
  */
 
@@ -91,7 +91,7 @@ class Security
         {
             if( !in_array($key, self::$keep))
             {
-                unset($_SESSION['csrf'][$key]);
+                self::removeToken($key);
             }
         }
     }
@@ -234,7 +234,7 @@ class Security
 				break;
 			
             case 'mixedint':
-				$data = preg_replace('/[^0-9.,]+/', '', self::escape($data) );
+				$data = preg_replace('/[^0-9\.,\+-]+/', '', self::escape($data) );
                 $data = self::unescape($data);
 				break;
 				
@@ -288,16 +288,16 @@ class Security
 	}
 
     /**
-     * Hash the email with SHA512 algo, used for identifications when the user login.
+     * Hash the email with the $algo -rithm, used for identifications when the user login.
      * 
      * @param  string $email the email address
      * @return string        the hashes email address
      */
-    public static function hashEmail( $email )
+    public static function hash( $email, $algo = 'SHA512' )
     {
         Configure::load('security');
 
-        return hash_hmac('SHA512', strtolower($email), Configure::get('security/hash_key'));
+        return hash_hmac($algo, strtolower($email), Configure::get('security/hash_key'));
     }
 
     /**

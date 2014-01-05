@@ -4,8 +4,8 @@
  *  https://github.com/MrEliasen/Zolid-Framework
  *  
  *  @author 	Mark Eliasen (mark.eliasen@zolidsolutions.com)
- *  @copyright 	Copyright (c) 2013, Mark Eliasen
- *  @version    0.1.6.0
+ *  @copyright 	Copyright (c) 2014, Mark Eliasen
+ *  @version    0.1.6.1
  *  @license 	http://opensource.org/licenses/MIT MIT License
  */
 
@@ -80,7 +80,7 @@ class Router
 			// check if we have received any actions we need to perform
 			if( Misc::data('route', 'request') )
 			{
-				$route = Security::sanitize(str_replace('/', DS, Misc::data('route', 'request')), 'route');
+				$route = str_replace('/', DS, Security::sanitize(Misc::data('route', 'request'), 'route'));
 				if( self::exists($route) )
 				{
 					$view = $route;

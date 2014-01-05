@@ -4,8 +4,8 @@
  *  https://github.com/MrEliasen/Zolid-Framework
  *  
  *  @author 	Mark Eliasen (mark.eliasen@zolidsolutions.com)
- *  @copyright 	Copyright (c) 2013, Mark Eliasen
- *  @version    0.1.6.0
+ *  @copyright 	Copyright (c) 2014, Mark Eliasen
+ *  @version    0.1.6.1
  *  @license 	http://opensource.org/licenses/MIT MIT License
  */
 
@@ -74,7 +74,7 @@ final class Configure
 	 *
 	 * @param string $file The file name in config dir to load (without .php)
 	 */
-	public static function isLoaded( $file )
+	public static function isloaded( $file )
 	{
 		if( !empty(self::$config[$file]) )
 		{
@@ -90,11 +90,18 @@ final class Configure
 	 * @param string $file The file name in config dir to load (without .php)
 	 * @param string $from The directory from which to load the given config file, defaults to the config dir
 	 */
-	public static function load( $file, $from = '' )
+	public static function load( $file, $from = '', $reload = false )
 	{
-		if( self::isLoaded($file) )
+		if( self::isloaded($file) )
 		{
-			return;
+			if( $reload )
+			{
+				unset(self::$config[$file]);
+			}
+			else
+			{
+				return;
+			}
 		}
 
 		$from = ( empty($from) ? ROOTPATH . 'config' . DS : $from );
@@ -107,7 +114,7 @@ final class Configure
 
 		$config[ str_replace('.php', '', $file) ] = include($from . $file);
 
-		if( !empty($config) && is_array($config) )
+		if( !empty($config) )
 		{
 			self::$config = array_merge(self::$config, $config);
 		}

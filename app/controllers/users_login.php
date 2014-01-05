@@ -4,8 +4,8 @@
  *  https://github.com/MrEliasen/Zolid-Framework
  *  
  *  @author 	Mark Eliasen (mark.eliasen@zolidsolutions.com)
- *  @copyright 	Copyright (c) 2013, Mark Eliasen
- *  @version    0.1.6.0
+ *  @copyright 	Copyright (c) 2014, Mark Eliasen
+ *  @version    0.1.6.1
  *  @license 	http://opensource.org/licenses/MIT MIT License
  */
 
@@ -112,7 +112,7 @@ class users_login extends AppController
 			);
 		}
 
-		$email = Security::hashEmail(Misc::data('login_email', 'post'));
+		$email = Security::hash(Misc::data('login_email', 'post'));
 
 		$stmt = $this->model->connection->prepare('SELECT id, password, active FROM ' . Configure::get('database/prefix') . 'accounts WHERE email_hash = :email LIMIT 1');
 		$stmt->bindValue(':email', $email, PDO::PARAM_STR);

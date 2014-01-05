@@ -4,8 +4,8 @@
  *  https://github.com/MrEliasen/Zolid-Framework
  *  
  *  @author 	Mark Eliasen (mark.eliasen@zolidsolutions.com)
- *  @copyright 	Copyright (c) 2013, Mark Eliasen
- *  @version    0.1.6.0
+ *  @copyright 	Copyright (c) 2014, Mark Eliasen
+ *  @version    0.1.6.1
  *  @license 	http://opensource.org/licenses/MIT MIT License
  */
 
@@ -140,7 +140,7 @@ class users_settings extends AppController
 			);
 		}
 
-		$hash = Security::hashEmail(Misc::data('newemail_email'));
+		$hash = Security::hash(Misc::data('newemail_email'));
 
 		if( $this->emailInUse($hash) )
 		{

@@ -4,8 +4,8 @@
  *  https://github.com/MrEliasen/Zolid-Framework
  *  
  *  @author 	Mark Eliasen (mark.eliasen@zolidsolutions.com)
- *  @copyright 	Copyright (c) 2013, Mark Eliasen
- *  @version    0.1.6.0
+ *  @copyright 	Copyright (c) 2014, Mark Eliasen
+ *  @version    0.1.6.1
  *  @license 	http://opensource.org/licenses/MIT MIT License
  */
 
@@ -13,7 +13,11 @@
 define('DS', DIRECTORY_SEPARATOR);
 
 // Set the Zolid-WHPS version. [Major].[Minor].[Revision].[Patch]
+<<<<<<< HEAD
+define('ZF_VERSION', '0.1.6.1');
+=======
 define('ZF_VERSION', '0.1.6.0');
+>>>>>>> cebcfb7132563d67136f9af1c0ad3bec1a71300a
 
 // Check if the version of PHP running on the server is new enough
 if( version_compare(PHP_VERSION, '5.3.0', '<') )

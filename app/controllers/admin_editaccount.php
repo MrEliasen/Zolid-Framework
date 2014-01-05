@@ -4,8 +4,8 @@
  *  https://github.com/MrEliasen/Zolid-Framework
  *  
  *  @author 	Mark Eliasen (mark.eliasen@zolidsolutions.com)
- *  @copyright 	Copyright (c) 2013, Mark Eliasen
- *  @version    0.1.6.0
+ *  @copyright 	Copyright (c) 2014, Mark Eliasen
+ *  @version    0.1.6.1
  *  @license 	http://opensource.org/licenses/MIT MIT License
  */
 
@@ -59,7 +59,7 @@ class admin_editaccount extends AppController
 			);
 		}
 
-		$hash = Security::hashEmail(Misc::data('updateaccount_email'));
+		$hash = Security::hash(Misc::data('updateaccount_email'));
 
 		if( $this->emailInUse($hash, Security::sanitize(Misc::data('id', 'get'), 'integer')) )
 		{
@@ -84,7 +84,7 @@ class admin_editaccount extends AppController
 		$stmt = $this->model->connection->prepare('UPDATE ' . Configure::get('database/prefix') . 'accounts SET ' . $passquery . ' email = :email, email_hash = :hash WHERE id = :uid');
 		$stmt->bindValue(':uid', Security::sanitize(Misc::data('id', 'get'), 'integer'), PDO::PARAM_INT);
 		$stmt->bindValue(':email', Security::encryptData(Misc::data('updateaccount_email')), PDO::PARAM_STR);
-		$stmt->bindValue(':hash', Security::hashEmail(Misc::data('updateaccount_email')), PDO::PARAM_STR);
+		$stmt->bindValue(':hash', Security::hash(Misc::data('updateaccount_email')), PDO::PARAM_STR);
 
 		if( !empty($passquery) )
 		{

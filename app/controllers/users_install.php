@@ -69,7 +69,7 @@ class users_install extends AppController
 		$stmt = $this->model->connection->prepare('INSERT INTO ' . Configure::get('database/prefix') . 'accounts SET username = :user, email = :email, email_hash = :emailhash, password = :passwd, permissions = :perms');
 		$stmt->bindValue(':user', Security::sanitize(Misc::data('install_adminuser'), 'username'), PDO::PARAM_STR);
 		$stmt->bindValue(':email', Security::encryptData(Misc::data('install_adminemail')), PDO::PARAM_STR);
-		$stmt->bindValue(':emailhash', Security::hashEmail(Misc::data('install_adminemail')), PDO::PARAM_STR);
+		$stmt->bindValue(':emailhash', Security::hash(Misc::data('install_adminemail')), PDO::PARAM_STR);
 		$stmt->bindValue(':passwd', $password, PDO::PARAM_STR);
 		$stmt->bindValue(':perms', @json_encode($permissions), PDO::PARAM_STR);
 		$stmt->execute();

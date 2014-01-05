@@ -4,8 +4,8 @@
  *  https://github.com/MrEliasen/Zolid-Framework
  *  
  *  @author 	Mark Eliasen (mark.eliasen@zolidsolutions.com)
- *  @copyright 	Copyright (c) 2013, Mark Eliasen
- *  @version    0.1.6.0
+ *  @copyright 	Copyright (c) 2014, Mark Eliasen
+ *  @version    0.1.6.1
  *  @license 	http://opensource.org/licenses/MIT MIT License
  */
 
@@ -54,7 +54,7 @@ class users_resetlogin extends AppController
 		$stmt = $this->model->connection->prepare('UPDATE ' . Configure::get('database/prefix') . 'accounts SET resettoken = :token, resetexpire = :date WHERE email_hash = :email LIMIT 1');
 		$stmt->bindValue(':token', $resettoken, PDO::PARAM_STR);
 		$stmt->bindValue(':date', $timeout, PDO::PARAM_INT);
-		$stmt->bindValue(':email', Security::hashEmail($_POST['reset_email']), PDO::PARAM_STR);
+		$stmt->bindValue(':email', Security::hash($_POST['reset_email']), PDO::PARAM_STR);
 		$stmt->execute();
 		$rows = $stmt->rowCount();
 		$stmt->closeCursor();
@@ -62,7 +62,7 @@ class users_resetlogin extends AppController
 		if( $rows > 0 )
 		{
 			$stmt = $this->model->connection->prepare('SELECT id FROM ' . Configure::get('database/prefix') . 'accounts WHERE email_hash = :email LIMIT 1');
-			$stmt->bindValue(':email', Security::hashEmail($_POST['reset_email']), PDO::PARAM_STR);
+			$stmt->bindValue(':email', Security::hash($_POST['reset_email']), PDO::PARAM_STR);
 			$stmt->execute();
 			$user = $stmt->fetch(PDO::FETCH_ASSOC);
 			$stmt->closeCursor();

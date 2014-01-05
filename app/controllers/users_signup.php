@@ -4,8 +4,8 @@
  *  https://github.com/MrEliasen/Zolid-Framework
  *  
  *  @author 	Mark Eliasen (mark.eliasen@zolidsolutions.com)
- *  @copyright 	Copyright (c) 2013, Mark Eliasen
- *  @version    0.1.6.0
+ *  @copyright 	Copyright (c) 2014, Mark Eliasen
+ *  @version    0.1.6.1
  *  @license 	http://opensource.org/licenses/MIT MIT License
  */
 
@@ -141,7 +141,7 @@ class users_signup extends AppController
 		$stmt = $this->model->connection->prepare('INSERT INTO ' . Configure::get('database/prefix') . 'accounts SET username = :user, email = :email, email_hash = :emailhash, password = :passwd, permissions = :perms, active = :active');
 		$stmt->bindValue(':user', Security::sanitize(Misc::data('signup_username'), 'username'), PDO::PARAM_STR);
 		$stmt->bindValue(':email', Security::encryptData(Misc::data('signup_email')), PDO::PARAM_STR);
-		$stmt->bindValue(':emailhash', Security::hashEmail(Misc::data('signup_email')), PDO::PARAM_STR);
+		$stmt->bindValue(':emailhash', Security::hash(Misc::data('signup_email')), PDO::PARAM_STR);
 		$stmt->bindValue(':passwd', $password, PDO::PARAM_STR);
 		$stmt->bindValue(':perms', @json_encode(Configure::get('users/permissions')), PDO::PARAM_STR);
 		$stmt->bindValue(':active', $activcode, PDO::PARAM_INT);
@@ -232,7 +232,7 @@ class users_signup extends AppController
 	private function emailInUse( $email )
 	{
 		$stmt = $this->model->connection->prepare('SELECT id FROM ' . Configure::get('database/prefix') . 'accounts WHERE email_hash = :email LIMIT 1');
-		$stmt->bindValue(':email', Security::hashEmail($email), PDO::PARAM_STR);
+		$stmt->bindValue(':email', Security::hash($email), PDO::PARAM_STR);
 		$stmt->execute();
 		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		$stmt->closeCursor();

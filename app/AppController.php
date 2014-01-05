@@ -4,8 +4,8 @@
  *  https://github.com/MrEliasen/Zolid-Framework
  *  
  *  @author 	Mark Eliasen (mark.eliasen@zolidsolutions.com)
- *  @copyright 	Copyright (c) 2013, Mark Eliasen
- *  @version    0.1.6.0
+ *  @copyright 	Copyright (c) 2014, Mark Eliasen
+ *  @version    0.1.6.1
  *  @license 	http://opensource.org/licenses/MIT MIT License
  */
 
@@ -56,7 +56,7 @@ class AppController
     public function __construct($model, $route)
     {
         $this->model = $model;
-		$this->route = $route;
+		$this->route = str_replace(DS, '/', $route);
         $this->action = Router::getAction();
         $this->checkLoginState();
 
@@ -72,11 +72,18 @@ class AppController
 	protected function preAction()
 	{
 		// To be replaced/extended by the inheriting controller if required. This function will fire before the "action"
-		if( $this->route != 'users/install' && is_readable(ROOTPATH . DS . 'app' . DS . 'views' . DS . 'users' . DS . 'install.pdt') ||  is_readable(ROOTPATH . DS . 'app' . DS . 'controllers' . DS . 'users_install.pdt') )
+		if( $this->model->installed && is_readable(ROOTPATH . DS . 'app' . DS . 'views' . DS . 'users' . DS . 'install.pdt') ||  is_readable(ROOTPATH . DS . 'app' . DS . 'controllers' . DS . 'users_install.pdt') )
 		{
-			Notifications::set('The install files have not been deleted. Please remove the follwing files: <b>app/views/users/install.pdt</b> AND <b>/app/controllers/users_install.php</b>.', 'WARNING!', 'error');
+			Notifications::set('The install files have not been deleted. Please remove the follwing files: <b>' . ROOTPATH . 'app' . DS . 'views' . DS . 'users' . DS . 'install.pdt</b> AND <b>' . ROOTPATH . 'app' . DS . 'controllers' . DS . 'users_install.php</b>.', 'WARNING!', 'error');
 			$this->redirect = 'users/home';
 			$this->action = null;
+		}
+		else
+		{
+			if( !$this->model->installed && $this->route !== 'users/install' )
+			{
+				$this->redirect = 'users/install';
+			}
 		}
 	}
 

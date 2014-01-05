@@ -1,3 +1,15 @@
+[v 0.1.6.1] - 5th of January, 2014
+---------------------------------------
+ - Fixed some copy paste and less descriptive DocBlocks for some methods.
+ - Changed the name of the "Security::emailHash" method to "Security::hash", and made it possible to supply an algo top use like Security::hash($value, $algo);
+ - Changed the method name of the "Configure::isLoaded()" method to "Configure::isloaded()".
+ - Added additional functionality to the "Configure::load()" method.
+ - Added the "placement" option to all notification methods.
+ - The framework will now automatically direct you to the installed.
+ - Fixed the framework so it should now also work on windows servers.
+ - Fixed the mailbox, you now actually send messages to the user you specify.
+ - Fixed 404 error page. It no longer dumps debug data.
+
 [v 0.1.6.0] - 31st of December, 2013
 ---------------------------------------
  - Almost complete rewrite of the system.

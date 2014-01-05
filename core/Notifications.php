@@ -4,8 +4,8 @@
  *  https://github.com/MrEliasen/Zolid-Framework
  *  
  *  @author 	Mark Eliasen (mark.eliasen@zolidsolutions.com)
- *  @copyright 	Copyright (c) 2013, Mark Eliasen
- *  @version    0.1.6.0
+ *  @copyright 	Copyright (c) 2014, Mark Eliasen
+ *  @version    0.1.6.1
  *  @license 	http://opensource.org/licenses/MIT MIT License
  */
 
@@ -30,7 +30,7 @@ class Notifications
 	 * @param string $title the notification title
 	 * @param string $type  the type/class the notification will have when output
 	 */
-	public static function set( $body, $title = '', $type = 'error' )
+	public static function set( $body, $title = '', $type = 'error', $placement = 'general' )
 	{
 		if( !empty($title) )
 		{
@@ -43,7 +43,7 @@ class Notifications
 			$type = 'danger';
 		}
 
-		$_SESSION['notification'] = '<div class="alert alert-' . $type . '"><button type="button" class="close" data-dismiss="alert">&#215;</button>' . $title . ' ' . $body . '</div>';
+		$_SESSION['notification'][$placement] = '<div class="alert alert-' . $type . '"><button type="button" class="close" data-dismiss="alert">&#215;</button>' . $title . ' ' . $body . '</div>';
 
 		return true;
 	}
@@ -53,12 +53,12 @@ class Notifications
 	 * 
 	 * @return string The notification message
 	 */
-	public static function show()
+	public static function show( $placement = 'general' )
 	{
-		if( self::pending() )
+		if( self::pending( $placement ) )
 		{
-			$msg = $_SESSION['notification'];
-			unset($_SESSION['notification']);
+			$msg = $_SESSION['notification'][ $placement ];
+			unset($_SESSION['notification'][ $placement ]);
 
 			return $msg;
 		}
@@ -69,9 +69,9 @@ class Notifications
 	 * 
 	 * @return boolean true/false
 	 */
-	public static function pending()
+	public static function pending( $placement = 'general' )
 	{
-		if( empty($_SESSION['notification']) )
+		if( empty($_SESSION['notification'][ $placement ]) )
 		{
 			return false;
 		}
