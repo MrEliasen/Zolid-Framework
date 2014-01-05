@@ -11,7 +11,7 @@ Thanks in advance!
 * Some features are missing from the older version but will be added in the new year.
 
 ##Documentation
-I will be working on an online documentation via Github (Pages and/or wiki)
+I am currently working on the documentation. You can find it the [wiki/documentation here](https://github.com/MrEliasen/Zolid-Framework/wiki) 
 
 ##Server Requirements
 * PHP 5.3+
