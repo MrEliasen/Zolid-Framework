@@ -1,12 +1,12 @@
-##Zolid Framework - 0.1.6.1
-MVC based PHP framework which allows you to very quickly build a website which requires a user system (login, signup, password reset etc.). It comes packed with a lot of security features to help protect against CSRF, XSS, Session Hijacking and more, which is easy to implement.
+##Zolid Framework - 0.2.0.0
+MVC based PHP framework which allows you to very quickly build/deploy a website which requires a user system (login, signup, password reset etc.). It comes packed with a lot of security features to help protect against CSRF, XSS, Session Hijacking and more, which is easy to implement. Since 0.2.0.0, there is now a plugin system which allow you to add functionality to your system without modifying the core system!
 
 ##Feedback
 If you do not mind, I would love to hear from you if you think parts of the code can be improved in any way as I always love to get feedback and become a better developer.<br>
 You can do this by contributing to this repo or by contacting me directly.<br>
 Thanks in advance!
 
-## 0.1.6.1 (5th of January 2014)
+## 0.2.0.0 (25th of May 2014)
 Please see the [CHANGELOG wiki](https://github.com/MrEliasen/Zolid-Framework/wiki/CHANGELOG) or the CHANGELOG file
 
 ##Documentation
