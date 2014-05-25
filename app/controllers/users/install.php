@@ -83,8 +83,8 @@ class ControllersUsersInstall extends AppController
 			if( $this->forceLogin( $this->model->connection->lastInsertId() ) )
 			{
 				// Delete the installer files if we can
-				//@unlink(ROOTPATH . 'app' . DS . 'views' . DS . 'users' . DS . 'install.pdt');
-				//@unlink(ROOTPATH . 'app' . DS . 'controllers' . DS . 'users' . DS . 'install.php');
+				@unlink(ROOTPATH . 'app' . DS . 'views' . DS . 'users' . DS . 'install.pdt');
+				@unlink(ROOTPATH . 'app' . DS . 'controllers' . DS . 'users' . DS . 'install.php');
 			}
 
 			return array(
