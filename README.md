@@ -6,6 +6,9 @@ If you do not mind, I would love to hear from you if you think parts of the code
 You can do this by contributing to this repo or by contacting me directly.<br>
 Thanks in advance!
 
+##Bugs
+If you find a/ny bugs, please submit them [here](https://github.com/MrEliasen/Zolid-Framework/issues/new). It's much easier to keep track of it this way. However feed free to contact me directly if you prefer this.
+
 ## 0.2.0.0 (25th of May 2014)
 Please see the [CHANGELOG wiki](https://github.com/MrEliasen/Zolid-Framework/wiki/CHANGELOG) or the CHANGELOG file
 
