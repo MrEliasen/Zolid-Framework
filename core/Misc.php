@@ -24,6 +24,40 @@ class Misc
 	}
 
 	/**
+	 * Convert a string to "CamelCase" from "file_case"
+	 * 
+	 * @param string $str the string to convert
+	 * @return string the converted string
+	 */
+	public static function toCamelCase( $str )
+	{
+		$str = ucwords(str_replace('/', ' ', $str));
+		return str_replace(' ', '', $str);
+	}
+
+	/**
+	 * Convert a string from "CamelCase" to "file/path"
+	 * 
+	 * @param string $str the string to convert
+	 * @return string the converted string
+	 */
+	public static function camelCaseToFilePath( $str )
+	{
+		static $cctfp_func = null;
+		if( $cctfp_func == null )
+		{
+			$cctfp_func = create_function('$c', 'return "/" . strtolower($c[1]);');
+		}
+
+		if( isset($str[0]) )
+		{
+			$str[0] = strtolower($str[0]);
+		}
+
+		return preg_replace_callback('/([A-Z])/', $cctfp_func, $str);
+	}
+
+	/**
 	 * Will return a human understandable timestamp of how long time it has been since the $date.
 	 * 
 	 * @param integer $date The UNIX timestamp from a date you want to calculate the time since.

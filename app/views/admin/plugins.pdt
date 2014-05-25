@@ -1,0 +1,71 @@
+<?php
+	$plugins = $this->controller->loadPluginList();
+?>
+<div class="row">
+  	<div class="col-xs-12">
+	    <h1>Manage Plugins</h1>
+	    <?php
+	    	$bc = array(
+	    		'Admin' => 'admin/home',
+	    		'Plugins' => 'admin/plugins'
+	    	);
+
+	    	echo $this->breadcrumb($bc);
+	    	echo Notifications::show();
+	    ?>
+	    <table class="table table-hover">
+	    	<thead>
+	    		<tr>
+	    			<th>Plugin</th>
+	    			<th class="text-center">Version</th>
+	    			<th class="text-center">Author</th>
+	    			<th></th>
+	    		</tr>
+	    	</thead>
+			<tbody>
+				<?php
+				if( !empty($plugins) )
+				{
+					foreach( $plugins as $directory => $plugin )
+					{
+						echo '<tr>
+								<td>
+									<strong>' . ( !empty($plugin['title']) ? Security::sanitize($plugin['title'], 'purestring') : 'No-Title' ) . '</strong><br>
+									<small>' . ( !empty($plugin['description']) ? Security::sanitize($plugin['description'], 'purestring') : '' ) . '</small>
+								</td>
+								<td class="plug-center text-center">
+									' . ( !empty($plugin['version']) ? $plugin['version'] : 'Unknown' ) . '
+								</td>
+								<td class="plug-center text-center">
+									' . ( !empty($plugin['author']) ? Security::sanitize($plugin['author'], 'purestring') : '' ) . '
+								</td>
+								<td class="text-right">';
+									
+									if( $plugin['installed'] )
+									{
+										if( $plugin['active'] )
+										{
+											echo '<a href="' . $this->controller->makeURL('admin/plugins') . '&action=deactivateplugin&plugin=' . urlencode($directory) . '" class="btn btn-warning">Deactivate</a> ';
+										}
+										else
+										{
+											echo '<a href="' . $this->controller->makeURL('admin/plugins') . '&action=activateplugin&plugin=' . urlencode($directory) . '" class="btn btn-success">Activate</a> ';
+										}
+
+										echo '<a href="' . $this->controller->makeURL('plugin/' . urlencode($directory)) . '" class="btn btn-default">View</a>
+										      <a href="' . $this->controller->makeURL('admin/plugins') . '&action=uninstallplugin&plugin=' . urlencode($directory) . '" class="btn btn-danger">Uninstall</a>';
+									}
+									else
+									{
+										echo '<a href="' . $this->controller->makeURL('admin/plugins') . '&action=installplugin&plugin=' . urlencode($directory) . '" class="btn btn-primary">Install</a>';
+									}
+							
+							echo '</td>
+							</tr>';
+					}
+				}
+				?>
+			</tbody>
+		</table>
+  	</div>
+</div>

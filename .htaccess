@@ -1,1 +1,11 @@
+Options +FollowSymLinks
 Options -Indexes
+
+########################################################################################################
+## You can uncomment the below lines, for more pretty URLs. Not fully supported by the framework yet. ##
+########################################################################################################
+#RewriteEngine On
+#RewriteCond %{REQUEST_FILENAME} -f [NC,OR]
+#RewriteCond %{REQUEST_FILENAME} -d [NC]
+#RewriteRule .* - [L]
+#RewriteRule ^([^\.]+)$ index.php?route=$1 [L]

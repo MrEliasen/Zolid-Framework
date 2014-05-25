@@ -156,7 +156,9 @@ class Security
         // Load the database configuration
         Configure::load('security');
 
-        $include = ROOTPATH . 'libs' . DS . 'htmlpurifier-' . Configure::get('security/purifier_version') . DS . 'HTMLPurifier.standalone.php';
+        print_r(Configure::get('security/purifier_version'));
+
+        $include = ROOTPATH . 'libs' . DS . 'htmlpurifier' . DS . 'HTMLPurifier.standalone.php';
 
         // Make sure the html purifier lib is available, else throw and error.
         if( !is_readable($include) )

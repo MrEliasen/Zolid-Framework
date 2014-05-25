@@ -34,8 +34,12 @@ $(document).ready(function(){
 	});
 
     // when we click the mailbox item, load the mail body.
+    var lastMsg = 0;
     $('#mailbox > a').click(function(e){
         var el = $(this);
+        if(lastMsg == $(this).data('id')) {
+            return;
+        }
         setLoading('Please wait..');
         $.ajax({
             method: 'POST',
@@ -47,6 +51,7 @@ $(document).ready(function(){
                     if(typeof reply.message_body != 'undefined') {
                         showNotification(reply.message_body, reply.message_title, reply.message_type);
                     } else {
+                        lastMsg = el.data('id');
                         if( el.find('.glyphicon').length ){
                             // decrease the unread messages counter
                             $('#unread').html( parseInt($('#unread').html()) - 1 );

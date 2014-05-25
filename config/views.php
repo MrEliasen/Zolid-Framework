@@ -1,20 +1,17 @@
 <?php
 
 return array(
-	/**
-	* Choose which protocol you wish to use throughout the site.
-	* http or https
-	*/
-	'protocol' => '',
+'protocol' => array(
+'value'=>'',
+'description'=>'Choose which protocol you wish to use throughout the site.'
+),
 
-	/**
-	* The base url for your site. This should be the url (without the protocol) where the user would see the index/home page.
-	* eg: my-website.com/users, or my-website.com.
-	*/
-	'base_url' => '',
+'base_url' => array(
+'value'=>'',
+'description'=>'The base url for your site. This should be the url (without the protocol) where the user would see the index/home page.'
+),
 
-	/**
-	* This is the default/home page route.
-	*/
-	'default_route' => 'users/home'
-);
+'default_route' => array(
+'value'=>'users/home',
+'description'=>'This is the default/home page route.'
+));

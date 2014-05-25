@@ -1,1 +1,6 @@
-{"version": "0.1.6.1","message": "Many fixes and improvements. Important: read the patch notes!","date": 1388947979,"priority": 2}
+{
+	"version": "0.2.0.0",
+	"message": "Huge update! Important Note: you CANNOT update 0.1.x to 0.2.x! Too much has changed/has been updated.",
+	"date": 1388947979
+	"priority": 2
+}

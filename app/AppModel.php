@@ -14,8 +14,9 @@ class AppModel
 	public $connection;
 	public $session;
 	public $installed = false;
+	public $lastError;
 	
-	public function __construct()
+	final public function __construct()
 	{
 		// Load the database configuration
 		Configure::load('database');
@@ -61,5 +62,47 @@ class AppModel
 				}
 			}
 		}
+	}
+
+	public function beginTransaction()
+	{
+		return $this->connection->beginTransaction();
+	}
+
+	public function lastInsertId()
+	{
+		return $this->connection->lastInsertId();
+	}
+
+	public function commit()
+	{
+		return $this->connection->commit();
+	}
+
+	public function rollback()
+	{
+		return $this->connection->rollback();
+	}
+
+	public function getSessionAccount()
+	{
+		$stmt = $this->connection->prepare('SELECT s.uid, a.username, a.sessid, a.permissions, ( SELECT COUNT(id) FROM ' . Configure::get('database/prefix')  . 'mailbox WHERE recipent = s.uid AND isread="0" ) as newmessages FROM ' . Configure::get('database/prefix')  . 'sessions as s LEFT JOIN ' . Configure::get('database/prefix')  . 'accounts as a ON a.id = s.uid WHERE s.id = :id');
+		$stmt->bindValue(':id', session_id(), PDO::PARAM_INT);
+		$stmt->execute();
+		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+		$stmt->closeCursor();
+
+		return $data;
+	}
+
+	public function getPluginInfo( $plugin )
+	{
+		$stmt = $this->connection->prepare('SELECT * FROM ' . Configure::get('database/prefix') . 'plugins WHERE dir = :dr LIMIT 1');
+		$stmt->bindValue(':dr', Security::sanitize($plugin, 'purestring'), PDO::PARAM_STR);
+		$stmt->execute();
+		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+		$stmt->closeCursor();
+
+		return $data;
 	}
 }

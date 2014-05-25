@@ -1,51 +1,42 @@
 <?php
-/*
- * The permissions are the default permissions given to a user when they sign up.
- * You are add as many as you wish. The permissions are converted to JSON and stored with each user in the database.
- */
 
 return array(
-	/**
-	* the max length of a users username (remember to make sure you accounts table allowes you specified range)
-	*/
-	'max_username_length' => 25,
+'max_username_length' => array(
+'value'=>25,
+'description'=>'the max length of a users username (remember to make sure you accounts table allowes you specified range)'
+),
 
-	/**
-	* Whether the user must click an activation link sent to their email when they sign up or not.
-	*/
-	'email_confirmation' => true,
+'email_confirmation' => array(
+'value'=>true,
+'description'=>'Whether the user must click an activation link sent to their email when they sign up or not.'
+),
 
-	/**
-	* Whether to login users automatically once they sign up.
-	*/
-	'signup_auto_login' => false,
+'signup_auto_login' => array(
+'value'=>false,
+'description'=>'Whether to login users automatically once they sign up.'
+),
 
-	/**
-	* This is how long password reset links (the user receive by email) are valid for. (Default 24 hrs)
-	*/
-	'reset_timeout' => 86400,
+'reset_timeout' => array(
+'value'=>86400,
+'description'=>'This is how long password reset links (the user receive by email) are valid for. (Default 24 hrs)'
+),
 
-	/**
-	* The permissions are the default permissions given to a user when they sign up.
- 	* You are add as many as you wish. The permissions are converted to JSON and stored with each user in the database.
-	*/
-	'permissions' => array(
-		'admin' => false
-	),
+'avatar_max_size' => array(
+'value'=>256,
+'description'=>'The maximum size (in KB) any uploaded avatar must be.'
+),
 
-	/**
-	* The maximum size (in KB) any uploaded avatar must be.
-	*/
-	'avatar_max_size' => 250, //kb
+'avatar_formats' => array(
+'value'=>'jpeg,jpg,png,gif',
+'description'=>'Allowed avatar image formats.'
+),
 
-	/**
-	* Allowed avatar image formats. ( Check any)
-	*/
-	'avatar_formats' => 'jpeg,jpg,png,gif',
+'avatar_width' => array(
+'value'=>250,
+'description'=>'This is the width the avatar is scaled to. it will scale the biggest size (height or width) so it keeps the aspect ratio.'
+),
 
-	/**
-	* This is the size the avatar is scaled to. it will scale the biggest size so it keeps the aspect ratio.
-	*/
-	'avatar_width' => 250,
-	'avatar_height' => 250
-);
+'avatar_height' => array(
+'value'=>250,
+'description'=>'This is the height the avatar is scaled to. it will scale the biggest size (height or width) so it keeps the aspect ratio.'
+));

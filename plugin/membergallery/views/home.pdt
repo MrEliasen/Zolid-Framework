@@ -1,0 +1,10 @@
+<legend>Our Awesome Members</legend>
+
+<div class="row">
+	<?php
+		foreach( $this->controller->getMembersList() as $member )
+		{
+			echo '<div class="col-md-3"><a href="' . $member['profileurl'] . '"><img src="' . $member['avatar'] . '" class="plugin_ml_image"></a></div>';
+		}	
+	?>
+</div>

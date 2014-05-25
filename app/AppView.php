@@ -22,7 +22,7 @@ class AppView
 	 */
 	private $controller;
 
-	public function __construct($model, $controller)
+	final public function __construct($model, $controller)
 	{
 		// Load the database configuration
 		Configure::load('view');
@@ -52,12 +52,6 @@ class AppView
 			return;
 		}
 
-		// Does the route exists?
-		if( !Router::exists($this->controller->redirect) )
-		{
-			return;
-		}
-
 		// Prevent infinite loops, check if we are already on the page we can to redirect to.
 		if( $this->controller->redirect == $this->controller->route )
 		{
@@ -76,35 +70,53 @@ class AppView
 	 */
 	public function output()
 	{
-        $template = explode('/', $this->controller->route);
-        $viewdir = (array)array_shift($template);
-        $viewdir = implode('', $viewdir);
+        $viewdir = explode(DS, $this->controller->route);
+        array_pop($viewdir);
+        $viewdir = implode(DS, $viewdir);
 
-        if( !in_array($viewdir, array('users', 'admin') ))
+        if( !is_readable(ROOTPATH . 'app' . DS . 'views' . DS . $viewdir . DS . 'headerfooter_template.pdt') )
         {
         	$viewdir = 'users';
         }
 
-        if( $viewdir == 'admin' && !$this->controller->hasPermission('admin') )
+        if( strpos($this->controller->route, 'plugin' . DS) === 0 )
+		{
+			$plugin_name = explode(DS, $this->controller->route);
+			$pluginController = 'Plugin' . ucfirst($plugin_name[1]) . 'Controller';
+			if( property_exists($pluginController, 'plugin') )
+			{
+				$plugindata = @$pluginController::$plugin;
+			}
+		}
+
+        $css_includes = '';
+        if( !empty($plugindata['css_includes']) )
         {
-        	$viewdir = 'users';
-        	$this->controller->route = 'errors/403';
+        	foreach( $plugindata['css_includes'] as $cssfile )
+        	{
+        		$css_includes .= "\n<link href='" . $this->controller->makeUrl() . '/plugin/' . $plugindata['directory'] . '/' . $cssfile . "' rel='stylesheet'>";
+        	}
+        }
+
+        $js_includes = '';
+        if( !empty($plugindata['js_includes']) )
+        {
+        	foreach( $plugindata['js_includes'] as $jsfile )
+        	{
+        		$js_includes .= "\n<script type='text/javascript' src='" . $this->controller->makeUrl() . '/plugin/' . $plugindata['directory'] . '/' . $jsfile . "'></script>";
+        	}
         }
 
 		// Get and generate the requested page content
 		ob_start();
-        include(ROOTPATH . 'app' . DS . 'views' . DS . $this->controller->route . '.pdt');
+       	include(ROOTPATH . $this->controller->route . '.pdt');
         $body = ob_get_clean();
 
-        // In case we use the same template in the admin directory, make the system know.
-        if( !is_readable(ROOTPATH . 'app' . DS . 'views' . DS . $viewdir . DS . 'views_template.pdt') )
-        {
-        	$viewdir = 'users';
-        }
+        $exec_time = 'Page generated in ' . round(microtime(true) - SCRIPT_START, 6) . ' seconds';
 
         // add the content to the template and return it
 		ob_start();
-        include(ROOTPATH . 'app' . DS . 'views' . DS . $viewdir . DS . 'views_template.pdt');
+        include(ROOTPATH . 'app' . DS . 'views' . DS . $viewdir . DS . 'headerfooter_template.pdt');
         return ob_get_clean();
 	}
 

@@ -11,11 +11,11 @@
 
 class Session
 {
-	private $model;
+    private $model;
 
-	public function __construct($model)
+	public function __construct( $model )
 	{
-		$this->model = $model;
+        $this->model = $model;
 	}
 
     public static function destroyMe()

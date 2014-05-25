@@ -53,16 +53,49 @@ class AppController
 	 */
     public $redirect;
  
-    public function __construct($model, $route)
+   	final public function __construct($model, $route)
     {
+
         $this->model = $model;
 		$this->route = str_replace(DS, '/', $route);
         $this->action = Router::getAction();
         $this->checkLoginState();
 
-        $this->preAction();
-        $this->action();
-        $this->postAction();
+    	if( !defined('PLUGIN_INSTALL') )
+    	{
+	        // To be replaced/extended by the inheriting controller if required. This function will fire before the "action"
+			if( $this->route !== 'app/views/users/install' && $this->model->installed && is_readable(ROOTPATH . DS . 'app' . DS . 'views' . DS . 'users' . DS . 'install.pdt') ||  is_readable(ROOTPATH . DS . 'app' . DS . 'controllers' . DS . 'users_install.pdt') )
+			{
+				Notifications::set('The install files have not been deleted. Please remove the follwing files: <b>' . ROOTPATH . 'app' . DS . 'views' . DS . 'users' . DS . 'install.pdt</b> AND <b>' . ROOTPATH . 'app' . DS . 'controllers' . DS . 'users_install.php</b>.', 'WARNING!', 'error');
+			}
+			else
+			{
+				if( !$this->model->installed && $this->route !== 'app/views/users/install' )
+				{
+					$this->redirect = 'users/install';
+				}
+			}
+
+			// If the plugin is not installed or not active, do not make it accessable.
+			// However if the plugin is not active, but the user is an admin, the user can access it.
+			if( strpos($this->route, 'plugin' . DS) === 0 )
+			{
+				$plugin = explode(DS, $this->route);
+				$info = $this->getPluginInfo($plugin[1]);
+				if( !$info['active'] && !$this->hasPermission('admin') )
+				{
+					$this->redirect = 'users/home';
+				}
+				if( !$info['installed'] )
+				{
+					$this->redirect = 'errors/404';
+				}
+			}
+
+	        $this->preAction();
+	        $this->action();
+	        $this->postAction();
+    	}
     }
 
     /**
@@ -71,20 +104,7 @@ class AppController
      */
 	protected function preAction()
 	{
-		// To be replaced/extended by the inheriting controller if required. This function will fire before the "action"
-		if( $this->model->installed && is_readable(ROOTPATH . DS . 'app' . DS . 'views' . DS . 'users' . DS . 'install.pdt') ||  is_readable(ROOTPATH . DS . 'app' . DS . 'controllers' . DS . 'users_install.pdt') )
-		{
-			Notifications::set('The install files have not been deleted. Please remove the follwing files: <b>' . ROOTPATH . 'app' . DS . 'views' . DS . 'users' . DS . 'install.pdt</b> AND <b>' . ROOTPATH . 'app' . DS . 'controllers' . DS . 'users_install.php</b>.', 'WARNING!', 'error');
-			$this->redirect = 'users/home';
-			$this->action = null;
-		}
-		else
-		{
-			if( !$this->model->installed && $this->route !== 'users/install' )
-			{
-				$this->redirect = 'users/install';
-			}
-		}
+		// placeholder for invoking inheriting classes's preAction function
 	}
 
 	/**
@@ -271,22 +291,17 @@ class AppController
 			return;
 		}
 
-		$stmt = $this->model->connection->prepare('SELECT s.uid, a.username, a.sessid, a.permissions, ( SELECT COUNT(id) FROM ' . Configure::get('database/prefix')  . 'mailbox WHERE recipent = s.uid AND isread="0" ) as newmessages FROM ' . Configure::get('database/prefix')  . 'sessions as s LEFT JOIN ' . Configure::get('database/prefix')  . 'accounts as a ON a.id = s.uid WHERE s.id = :id');
-		$stmt->bindValue(':id', session_id(), PDO::PARAM_INT);
-		$stmt->execute();
-		$sesaccount = $stmt->fetch(PDO::FETCH_ASSOC);
-		$stmt->closeCursor();
-
-		if( empty($sesaccount['uid']) || empty($sesaccount['sessid']) || $sesaccount['uid'] != Session::get('user/id') || $sesaccount['sessid'] != session_id() )
+		$account = $this->model->getSessionAccount();
+		if( empty($account['uid']) || empty($account['sessid']) || $account['uid'] != Session::get('user/id') || $account['sessid'] != session_id() )
 		{
 			return;
 		}
 
-		Session::set('user/id', $sesaccount['uid']);
-		Session::set('user/username', $sesaccount['username']);
-		Session::set('mailbox/new', $sesaccount['newmessages']);
+		Session::set('user/id', $account['uid']);
+		Session::set('user/username', $account['username']);
+		Session::set('mailbox/new', $account['newmessages']);
 
-		$this->permissions = @json_decode($sesaccount['permissions'], true);
+		$this->permissions = @json_decode($account['permissions'], true);
 		$this->loggedin = true;
 	}
 
@@ -467,19 +482,20 @@ class AppController
 	 */
 	public function showPagination( $items, $perpage = 10, $route = '' )
 	{
+		$route = ( empty($route) ? str_replace(array('app/views/', 'plugin/'), array('',''), $this->route) : $route );
 		$page = ( Misc::data('page', 'request') == null ? 1 : intval(Misc::data('page', 'request')) );
 		$next = ( $page < ceil($items / $perpage) ? $page + 1 : $page );
 		$prev = ( $page > 1 ? $page - 1 : $page );
 
 		$pagination = '<ul class="pagination">
-						  <li><a href="' . $this->makeUrl( ( empty($route) ? $this->route : $route ) ) . '&page=' . $prev . '">&laquo;</a></li>';
+						  <li><a href="' . $this->makeUrl( $route ) . '&page=' . $prev . '">&laquo;</a></li>';
 
   		for( $i = 1; $i <= ceil( $items / $perpage ); $i++ )
   		{ 
-  			$pagination .=  '<li ' . ( $page == $i ? 'class="active"' : '' ) . '><a href="' . $this->makeUrl( ( empty($route) ? $this->route : $route ) ) . '&page=' . $i . '">' . $i . '</a></li>';
+  			$pagination .=  '<li ' . ( $page == $i ? 'class="active"' : '' ) . '><a href="' . $this->makeUrl( $route ) . '&page=' . $i . '">' . $i . '</a></li>';
   		}
 
-		$pagination .= '<li><a href="' . $this->makeUrl( ( empty($route) ? $this->route : $route ) ) . '&page=' . $next . '">&raquo;</a></li>
+		$pagination .= '<li><a href="' . $this->makeUrl( $route ) . '&page=' . $next . '">&raquo;</a></li>
 					</ul>';
 
 		return $pagination;
@@ -499,5 +515,34 @@ class AppController
         }
 
         return $this->makeUrl() . ( !empty($avatar) ? $avatar : 'assets/images/noavatar.gif' );
+    }
+
+    /**
+     * Graps the requested plugins status from the database.
+     * 
+     * @param  string $plugin the directory name of the plugin
+     * @return array          the plugin information.
+     */
+    protected function getPluginInfo( $plugin )
+    {
+		$info = $this->model->getPluginInfo($plugin);
+		if( !empty($info) )
+		{
+			return array(
+				'version' => $info['version'],
+				'installed' => true,
+				'install_date' => $info['install_date'],
+				'active' => (bool) $info['active']
+			);
+		}
+		else
+		{
+			return array(
+				'version' => '',
+				'installed' => false,
+				'install_date' => '',
+				'active' => false
+			);
+		}
     }
 }

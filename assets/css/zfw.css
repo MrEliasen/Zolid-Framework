@@ -1,6 +1,10 @@
 /* 
  * Misc.
  ***********************************/
+body{
+	margin-top: 60px;
+}
+
 .spacer20{
 	height: 1px;
 	margin: 8px 0px;
@@ -8,10 +12,33 @@
 .navbar-user{
 	margin-right: 0px !important;
 }
+.required{
+	color: #f10000;
+	font-weight: bold;
+	font-size: 120%;
+	float: right;
+}
+
+/* 
+ * Plugins
+ ***********************************/
+.plug-center {
+	line-height: 41px !important;
+}
+
+
+/* 
+ * Mailbox
+ ***********************************/
 #mailbox{
-	min-height: 64px;
-	max-height: 320px;
+	height: 320px;
 	overflow-y: scroll;
+}
+.nms-placeholder {
+	text-align: center;
+	color: #A0A0A0;
+	padding-top: 13px;
+	border-radius: 5px;
 }
 
 /* 
@@ -64,6 +91,15 @@
 	z-index: 1700;
 	opacity:0.80;
 	filter:alpha(opacity=80);
+}
+
+/* 
+ * Debug footer
+ ***********************************/
+.debuginfo small {
+	color: #D3D3D3;
+	text-align: center;
+	display: block;
 }
 
 /* 

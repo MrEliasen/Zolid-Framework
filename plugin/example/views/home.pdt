@@ -1,0 +1,2 @@
+<h2>Example Plugin</h2>
+<pre><?php echo print_r($this->controller->thisPlugin(), true); ?></pre>

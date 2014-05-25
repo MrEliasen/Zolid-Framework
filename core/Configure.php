@@ -29,9 +29,10 @@ final class Configure
 	 * Fetches a setting set using Configure::get()
 	 *
 	 * @param string $name The name of the setting to get
+	 * @param string $raw  Get the raw settings data. (eg. php array with both value and description)
 	 * @return mixed The setting specified by $name, or null if $name was not found
 	 */
-	public static function get( $name )
+	public static function get( $name, $raw = false )
 	{
 		$name = explode('/', strtolower($name));
 		$data = self::$config;
@@ -47,7 +48,7 @@ final class Configure
 			$data = $data[ $n ];
 		}
 
-		return $data;
+		return ( is_array($data) && isset($data['value']) && !$raw ? $data['value'] : $data );
 	}
 	
 	/**
@@ -63,7 +64,14 @@ final class Configure
 
 		while( $segment = array_pop($name) )
 		{
-		    $data = array($segment => ( empty($data) ? $value : $data ) );
+			if( is_array($segment) )
+			{
+				$data = array($segment => array('value' => ( empty($data) ? $value : $data ) ) );
+			}
+			else
+			{
+		    	$data = array($segment => ( empty($data) ? $value : $data ) );
+			}
 		}
 
 		self::$config = array_replace_recursive(self::$config, $data);

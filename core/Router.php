@@ -31,10 +31,17 @@ class Router
 	public static function isBlocked( $route )
 	{
 		$routepieces = explode('/', $route);
-
-		if( in_array($routepieces[0] . '/*', self::$blocked) || in_array($route, self::$blocked))
+		$newroute = '';
+		$i = 1; //avoid long routes sent to evil minded people, I cannot believe you could have something as deep as 20 sub directories. I could be wrong, just increate the number if this is the case.
+		foreach( $routepieces as $piece )
 		{
-			return true;
+			$newroute = ( empty($newroute) ? '' : '/' ) . $piece;
+			if( $i > 20 || in_array($newroute, self::$blocked) || in_array($newroute . '/*', self::$blocked) )
+			{
+				return true;
+			}
+
+			$i++;
 		}
 
 		return false;
@@ -47,14 +54,24 @@ class Router
 	 * @param  boolean $controller If you are checking a controller exists and not a view
 	 * @return boolean             True if it exists, false if not.
 	 */
-	public static function exists( $route, $controller = false )
+	public static function exists( $route, $check = 'view' )
 	{
-		if( $controller || ( !$controller && !self::isBlocked($route) ) )
+		if( $check == 'controllers' )
 		{
-			if( is_readable(ROOTPATH . 'app' . DS . 'views' . DS . $route . '.pdt') || ( $controller && is_readable(ROOTPATH . 'app' . DS . 'controllers' . DS . $route . '.php') ) )
-			{
-				return true;
-			}
+			$path = ROOTPATH . 'app' . DS . 'controllers' . DS . $route . '.php';
+		}
+		else if( $check == 'models' )
+		{
+			$path = ROOTPATH . 'app' . DS . 'models' . DS . $route . '.php';
+		}
+		else
+		{
+			$path = ROOTPATH . 'app' . DS . 'views' . DS . $route . '.pdt';
+		}
+
+		if( !self::isBlocked($route) && is_readable($path) )
+		{
+			return true;
 		}
 
 		return false;
@@ -72,45 +89,151 @@ class Router
 		// Load the database configuration
 		Configure::load('views');
 
+		$model = Configure::get('views/default_route');
 		$view = Configure::get('views/default_route');
-		$controller = str_replace('/' , '_', Configure::get('views/default_route'));
+		$controller = Configure::get('views/default_route');
+		$route = Configure::get('views/default_route');
 
-		if( !Misc::maintenance() )
+		if( Misc::maintenance() )
 		{
-			// check if we have received any actions we need to perform
-			if( Misc::data('route', 'request') )
-			{
-				$route = str_replace('/', DS, Security::sanitize(Misc::data('route', 'request'), 'route'));
-				if( self::exists($route) )
-				{
-					$view = $route;
-				}
-				else
-				{
-					$view = 'errors' . DS . '404';
-					$controller = str_replace(DS , '_', $view);
-				}
-
-				if( self::exists(str_replace(DS, '_', $route), true) )
-				{
-					$controller = str_replace(DS, '_', $route);
-				}
-			}
+			$controller = $view =  'app' . DS . 'users' . DS . 'maintenance';
 		}
 		else
 		{
-			$view = 'users/maintenance';
-			$controller = '';
+			// check if we have received any actions we need to perform
+			if( Misc::data('route', 'request') != '' )
+			{
+				$route = str_replace('/', DS, Security::sanitize(Misc::data('route', 'request'), 'route'));
+				if( strpos($route, 'plugin/') === 0)
+				{
+					return self::getPluginRoute($route);
+				}
+				else
+				{
+					$view = 'app' . DS . $route;
+					if( self::exists($route, 'controllers') )
+					{
+						$controller = $route;
+					}
+				}
+			}
 		}
 
-		if( empty($controller) || !is_readable(ROOTPATH . 'app' . DS . 'controllers' . DS . $controller . '.php') )
+		if( empty($controller) || !self::exists($controller, 'controllers') )
 		{
 			$controller = 'AppController';
+		}
+		else
+		{
+			$controller = 'Controllers' . Misc::toCamelCase($controller);
+		}
+
+		$model = str_replace('Controllers', 'Models', $controller);
+		if( !self::exists($route, 'models') )
+		{
+			$model = 'AppModel';
+		}
+
+		$route = 'app' . DS . 'views' . DS . $route;
+		if( !is_readable(ROOTPATH . DS . $route . '.pdt') )
+		{
+			$view = 'AppView';
+			$controller = 'ControllersErrors404';
+			$model = 'AppModel';
+			$route = 'app' . DS . 'views' . DS . 'errors' . DS . '404';
+
+			if( !self::exists($controller, 'controllers') )
+			{
+				$controller = 'AppController';
+			}
 		}
 
 		return array(
 			'controller' => $controller,
-			'view' => $view
+			'model' => $model,
+			'view' => 'AppView',
+			'route' => $route
+		);
+	}
+
+	protected function getPluginRoute( $route )
+	{
+		$route = str_replace('plugins' . DS, '', $route);
+		$route = explode(DS, $route);
+		array_shift($route);
+		$plugin_name = strtolower(current($route));
+		array_shift($route);
+		$route = implode(DS, $route);
+
+		if( empty($route) );
+		{
+			$route = 'home';
+		}
+
+		$controller = ROOTPATH . 'plugin' . DS . $plugin_name . DS . 'controllers' . DS . $route;
+		$model 		= ROOTPATH . 'plugin' . DS . $plugin_name . DS . 'models' . DS . $route;
+		$view 		= ROOTPATH . 'plugin' . DS . $plugin_name . DS . 'Plugin' . ucfirst($plugin_name) . 'view';
+
+		if( is_readable($controller . '.php') )
+		{
+			$controller = 'Plugin' . Misc::toCamelCase($plugin_name) . 'Controllers' . Misc::toCamelCase($route);
+		}
+		else
+		{
+			if( is_readable(ROOTPATH . 'plugin' . DS . $plugin_name . DS . 'controller.php') )
+			{
+				$controller = 'Plugin' . ucfirst($plugin_name) . 'Controller';
+			}
+			else
+			{
+				$controller = 'AppController';
+			}
+		}
+
+		if( is_readable($model . '.php') )
+		{
+			$model = 'Plugin' . Misc::toCamelCase($plugin_name) . 'Models' . Misc::toCamelCase($route);
+		}
+		else
+		{
+			if( is_readable(ROOTPATH . 'plugin' . DS . $plugin_name . DS . 'model.php') )
+			{
+				$model = 'Plugin' . ucfirst($plugin_name) . 'Model';
+			}
+			else
+			{
+				$model = 'AppModel';
+			}
+		}
+
+		if( is_readable($view . '.php') )
+		{
+			$view = Misc::toCamelCase('plugin' . DS . 'views' . DS . $plugin_name . DS . $route);
+		}
+		else
+		{
+			$view = 'AppView';
+		}
+
+		$route = 'plugin' . DS . $plugin_name . DS . 'views' . DS . $route;
+		if( !is_readable(ROOTPATH . DS . $route . '.pdt') )
+		{
+			$view = 'AppView';
+			$controller = 'ControllersErrors404';
+			$model = 'AppModel';
+			$route = 'app' . DS . 'views' . DS . 'errors' . DS . '404';
+
+			if( !self::exists($controller, 'controllers') )
+			{
+				$controller = 'AppController';
+			}
+		}
+
+		return array(
+			'controller' => $controller,
+			'model' => $model,
+			'view' => $view,
+			'route' => $route
 		);
 	}
 

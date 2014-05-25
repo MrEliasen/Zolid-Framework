@@ -1,3 +1,24 @@
+[v 0.2.0.0] - 25th of May, 2014
+---------------------------------------
+ - Fixed an issue with password reset not working
+ - Fixed installer bug where you had to create the avatar directory to continue.
+ - Fixed the installer skipping the admin account setup step.
+ - Fixed the "Registered" date for the initial admin account.
+ - Fixed the Framework version check not pulling in the correct version.
+ - Fixed misc. spelling mistakes and wording.
+ - Fixed saving boolean values in the admin settings section.
+ - Fixed an issues where error page 404 would not display.
+ - Fixed an issues where the date/time would show and error if the value was invalid.
+ - Updated the structure of the config files.
+ - Updated the autoloader and router to acommidate these new changes.
+ - Updated the structure and internals to be closer to the MVC architectural pattern.
+ - Updated the autoloader and router to acommidate these new changes.
+ - Updated the installer's first step and removed obsolete checks.
+ - Updated the template to Bootstrap 3.1.1.
+ - Updated jQuery to 1.11.1.
+ - Added a views template (header, footer etc) for each view directory, with fallback to "users" template.
+ - Added a plugin system. This allows you to add/remove additional functionality to the core system as you please without changing the core code.
+
 [v 0.1.6.1] - 5th of January, 2014
 ---------------------------------------
  - Fixed some copy paste and less descriptive DocBlocks for some methods.

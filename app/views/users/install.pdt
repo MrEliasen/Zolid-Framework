@@ -1,14 +1,5 @@
-<style>
-	.required{
-		color: #f10000;
-		font-weight: bold;
-		font-size: 120%;
-		float: right;
-	}
-</style>
-
 <div class="row">
-  	<div class="col-lg-12">
+  	<div class="col-md-8 col-md-offset-2">
 
 <?php
 if( empty($_GET['step']) || $_GET['step'] == 1):
@@ -23,16 +14,16 @@ if( empty($_GET['step']) || $_GET['step'] == 1):
 	    	);
 	    	echo $this->breadcrumb($bc);
 	    ?>
-		<div class="col-lg-6">
+		<div class="col-md-12">
 			<table class="table table-striped">
 				<tr>
 					<td colspan="2"><strong>General</strong></td>
 				</tr>
 				<tr>
-					<td>PHP Version 5.3.0 or newer</td>
+					<td>PHP Version <?php echo REQ_PHPVERSION; ?> or newer</td>
 					<td style="text-align: right;">
 						<?php
-							if( version_compare(PHP_VERSION, '5.3') < 0 )
+							if( version_compare(PHP_VERSION, REQ_PHPVERSION) < 0 )
 							{
 								$continue = false;
 								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
@@ -48,10 +39,10 @@ if( empty($_GET['step']) || $_GET['step'] == 1):
 					<td colspan="2"><strong>Extensions</strong></td>
 				</tr>
 				<tr>
-					<td>Required Extension 'mysql'</td>
+					<td>Required Extension 'pdo_mysql'</td>
 					<td style="text-align: right;">
 						<?php
-							if( !extension_loaded('mysql') )
+							if( !extension_loaded('pdo_mysql') )
 							{
 								$continue = false;
 								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
@@ -68,22 +59,6 @@ if( empty($_GET['step']) || $_GET['step'] == 1):
 					<td style="text-align: right;">
 						<?php
 							if( !extension_loaded('json') )
-							{
-								$continue = false;
-								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
-							}
-							else
-							{
-								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
-							}
-						?>
-					</td>
-				</tr>
-				<tr>
-					<td>Required Extension 'pdo_mysql'</td>
-					<td style="text-align: right;">
-						<?php
-							if( !extension_loaded('pdo_mysql') )
 							{
 								$continue = false;
 								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
@@ -258,22 +233,6 @@ if( empty($_GET['step']) || $_GET['step'] == 1):
 						?>
 					</td>
 				</tr>
-				<tr>
-					<td>Write Permissions: /config/</td>
-					<td style="text-align: right;">
-						<?php
-							if( !is_writable(ROOTPATH . DS . 'config') )
-							{
-								$continue = false;
-								echo '<span class="label label-danger"><i class="glyphicon glyphicon-thumbs-down"></i></span>';
-							}
-							else
-							{
-								echo '<span class="label label-success"><i class="glyphicon glyphicon-thumbs-up"></i></span>';
-							}
-						?>
-					</td>
-				</tr>
 			</table>
 			<hr>
 			<?php
@@ -303,42 +262,42 @@ if( empty($_GET['step']) || $_GET['step'] == 1):
 	    ?>
 
 		<form class="form-horizontal" method="ajax" action="#" autocomplete="off">
-			<div class="col-lg-6">
+			<div class="col-md-12">
 				<legend>Database Settings</legend>
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_sqlhost">Host<span class="required">*</span></label>
 					<div class="col-lg-8">
-						<input class="form-control" type="text" id="install_sqlhost" name="install_sqlhost" placeholder="Mysql Host (localhost)" value="<?php echo ( Misc::data('install_sqlhost', 'post') == null ? 'localhost' : Misc::data('install_sqlhost', 'post') ); ?>">
+						<input class="form-control" type="text" id="install_sqlhost" name="install_sqlhost" placeholder="Mysql Host (localhost)" value="<?php echo ( Misc::data('install_sqlhost', 'post') == null ? Configure::get('database/host') : Misc::data('install_sqlhost', 'post') ); ?>">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_sqlport">Port<span class="required">*</span></label>
 					<div class="col-lg-8">
-						<input class="form-control" type="text" id="install_sqlport" name="install_sqlport" placeholder="Mysql Port (3306)" value="<?php echo ( Misc::data('install_sqlport', 'post') == null ? '3306' : Misc::data('install_sqlport', 'post') ); ?>">
+						<input class="form-control" type="text" id="install_sqlport" name="install_sqlport" placeholder="Mysql Port (3306)" value="<?php echo ( Misc::data('install_sqlport', 'post') == null ? Configure::get('database/port') : Misc::data('install_sqlport', 'post') ); ?>">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_sqldbname">Database Name<span class="required">*</span></label>
 					<div class="col-lg-8">
-						<input class="form-control" type="text" id="install_sqldbname" name="install_sqldbname" placeholder="Database Name" value="<?php echo Misc::data('install_sqldbname', 'post'); ?>">
+						<input class="form-control" type="text" id="install_sqldbname" name="install_sqldbname" placeholder="Database Name" value="<?php echo ( Misc::data('install_sqldbname', 'post') == null ? Configure::get('database/dbname') : Misc::data('install_sqldbname', 'post') ); ?>">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_sqlprefix">Table Prefix</label>
 					<div class="col-lg-8">
-						<input class="form-control" type="text" id="install_sqlprefix" name="install_sqlprefix" placeholder="Database Name" value="<?php echo Misc::data('install_sqlprefix', 'post'); ?>">
+						<input class="form-control" type="text" id="install_sqlprefix" name="install_sqlprefix" placeholder="Database Prefix" value="<?php echo ( Misc::data('install_sqlprefix', 'post') == null ? Configure::get('database/prefix') : Misc::data('install_sqlprefix', 'post') ); ?>">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_sqluser">User<span class="required">*</span></label>
 					<div class="col-lg-8">
-						<input class="form-control" type="text" id="install_sqluser" name="install_sqluser" placeholder="User" value="<?php echo Misc::data('install_sqluser', 'post'); ?>">
+						<input class="form-control" type="text" id="install_sqluser" name="install_sqluser" placeholder="User" value="<?php echo ( Misc::data('install_sqluser', 'post') == null ? Configure::get('database/user') : Misc::data('install_sqluser', 'post') ); ?>">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_sqlpass">Password<span class="required">*</span></label>
 					<div class="col-lg-8">
-						<input class="form-control" type="password" id="install_sqlpass" name="install_sqlpass" placeholder="Password" value="<?php echo Misc::data('install_sqlpass', 'post'); ?>">
+						<input class="form-control" type="password" id="install_sqlpass" name="install_sqlpass" placeholder="Password" value="<?php echo ( Misc::data('install_sqlpass', 'post') == null ? Configure::get('database/pass') : Misc::data('install_sqlpass', 'post') ); ?>">
 					</div>
 				</div>
                 
@@ -346,7 +305,7 @@ if( empty($_GET['step']) || $_GET['step'] == 1):
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_baseurl">Base Url<span class="required">*</span></label>
 					<div class="col-lg-8">
-						<input class="form-control" type="text" id="install_baseurl" name="install_baseurl" placeholder="eg.<?php echo $this->controller->makeUrl(); ?>" value="<?php echo ( Misc::data('install_baseurl', 'post') == null ? str_replace('http://', '', substr($this->controller->makeUrl(), 0 , -1)) : Misc::data('install_baseurl', 'post') ); ?>">
+						<input class="form-control" type="text" id="install_baseurl" name="install_baseurl" placeholder="eg.<?php echo $this->controller->makeUrl(); ?>" value="<?php echo ( Misc::data('install_baseurl', 'post') == null ? ( Configure::get('views/base_url') == '' ? str_replace('http://', '', substr($this->controller->makeUrl(), 0 , -1)) : Configure::get('views/base_url') ) : Misc::data('install_baseurl', 'post') ); ?>">
                         <span class="help-block">This is the url (without protocol and trailing slash) to where this framework is being installed. Eg. "you-domain.com/users" or "you-domain.com".<br>
 					</div>
 				</div>
@@ -362,13 +321,13 @@ if( empty($_GET['step']) || $_GET['step'] == 1):
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_sitetitle">Site Name<span class="required">*</span></label>
 					<div class="col-lg-8">
-						<input class="form-control" type="text" id="install_sitetitle" name="install_sitetitle" placeholder="eg. Zolid Framework">
+						<input class="form-control" type="text" id="install_sitetitle" name="install_sitetitle" placeholder="eg. Zolid Framework" value="<?php echo ( Misc::data('install_sitetitle', 'post') == null ? Configure::get('core/site_title') : Misc::data('install_sitetitle', 'post') ); ?>">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_mailsfrom">Site Email<span class="required">*</span></label>
 					<div class="col-lg-8">
-						<input class="form-control" type="text" id="install_mailsfrom" name="install_mailsfrom" placeholder="eg. hello@domain.com">
+						<input class="form-control" type="text" id="install_mailsfrom" name="install_mailsfrom" placeholder="eg. hello@domain.com" value="<?php echo ( Misc::data('install_mailsfrom', 'post') == null ? Configure::get('core/emails_from') : Misc::data('install_mailsfrom', 'post') ); ?>">
 					</div>
 				</div>
 				<div class="form-group">
@@ -390,25 +349,25 @@ if( empty($_GET['step']) || $_GET['step'] == 1):
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_smtphost">Host</label>
 					<div class="col-lg-8">
-						<input class="form-control" type="text" id="install_smtphost" name="install_smtphost" placeholder="eg. mail.domain.com">
+						<input class="form-control" type="text" id="install_smtphost" name="install_smtphost" placeholder="eg. mail.domain.com" value="<?php echo ( Misc::data('install_smtphost', 'post') == null ? Configure::get('core/smtp_host') : Misc::data('install_smtphost', 'post') ); ?>">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_smtpport">Port</label>
 					<div class="col-lg-8">
-						<input class="form-control" type="text" id="install_smtpport" name="install_smtpport" placeholder="25 is default">
+						<input class="form-control" type="text" id="install_smtpport" name="install_smtpport" placeholder="25 is default" value="<?php echo ( Misc::data('install_smtpport', 'post') == null ? Configure::get('core/smtp_port') : Misc::data('install_smtpport', 'post') ); ?>">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_smtpuser">User</label>
 					<div class="col-lg-8">
-						<input class="form-control" type="text" id="install_smtpuser" name="install_smtpuser" placeholder="">
+						<input class="form-control" type="text" id="install_smtpuser" name="install_smtpuser" placeholder="" value="<?php echo ( Misc::data('install_smtpuser', 'post') == null ? Configure::get('core/smtp_user') : Misc::data('install_smtpuser', 'post') ); ?>">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_smtppass">Password</label>
 					<div class="col-lg-8">
-						<input class="form-control" type="text" id="install_smtppass" name="install_smtppass" placeholder="">
+						<input class="form-control" type="text" id="install_smtppass" name="install_smtppass" placeholder="" value="<?php echo ( Misc::data('install_smtppass', 'post') == null ? Configure::get('core/smtp_pass') : Misc::data('install_smtppass', 'post') ); ?>">
 					</div>
 				</div>
         
@@ -436,7 +395,7 @@ if( empty($_GET['step']) || $_GET['step'] == 1):
 	    ?>
 
 		<form class="form-horizontal" method="ajax" action="#" autocomplete="off">
-			<div class="col-lg-6">
+			<div class="col-md-12">
 				<legend>Admin Account</legend>
 				<div class="form-group">
 					<label class="col-lg-4 control-label" for="install_adminuser">Username</label>
@@ -460,7 +419,7 @@ if( empty($_GET['step']) || $_GET['step'] == 1):
         
 	        <div class="clearfix"></div>
 
-	        <div class="col-lg-6 control-label">
+	        <div class="col-md-12 control-label">
 	            <button type="submit" class="btn btn-lg btn-block btn-primary">Finish Installation</button>
 	        </div>
 
