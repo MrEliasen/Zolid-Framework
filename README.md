@@ -13,9 +13,6 @@ If you find a/ny bugs, please submit them [here](https://github.com/MrEliasen/Zo
 =======
 You can find a list [here](https://github.com/MrEliasen/Zolid-Framework/wiki/Known-Bugs) with the current known bugs and potentially fixes.
 
-## 0.2.0.0 (25th of May 2014)
-Please see the [CHANGELOG wiki](https://github.com/MrEliasen/Zolid-Framework/wiki/CHANGELOG) or the CHANGELOG file
-
 ##Documentation
 I am currently working on the documentation. You can find it the [wiki/documentation here](https://github.com/MrEliasen/Zolid-Framework/wiki) 
 
