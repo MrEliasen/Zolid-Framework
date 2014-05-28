@@ -31,7 +31,7 @@ class Misc
 	 */
 	public static function toCamelCase( $str )
 	{
-		$str = ucwords(str_replace('/', ' ', $str));
+		$str = ucwords(str_replace(DS, ' ', $str));
 		return str_replace(' ', '', $str);
 	}
 
@@ -46,7 +46,7 @@ class Misc
 		static $cctfp_func = null;
 		if( $cctfp_func == null )
 		{
-			$cctfp_func = create_function('$c', 'return "/" . strtolower($c[1]);');
+			$cctfp_func = create_function('$c', 'return DS . strtolower($c[1]);');
 		}
 
 		if( isset($str[0]) )

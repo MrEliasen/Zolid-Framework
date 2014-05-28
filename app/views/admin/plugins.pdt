@@ -52,6 +52,11 @@
 											echo '<a href="' . $this->controller->makeURL('admin/plugins') . '&action=activateplugin&plugin=' . urlencode($directory) . '" class="btn btn-success">Activate</a> ';
 										}
 
+										if( !empty($plugin['settings_page']) )
+										{
+											echo '<a href="' . $this->controller->makeURL('plugin/' . urlencode($directory)) . '/' . $plugin['settings_page'] . '" class="btn btn-primary">Configure</a>';
+										}
+
 										echo '<a href="' . $this->controller->makeURL('plugin/' . urlencode($directory)) . '" class="btn btn-default">View</a>
 										      <a href="' . $this->controller->makeURL('admin/plugins') . '&action=uninstallplugin&plugin=' . urlencode($directory) . '" class="btn btn-danger">Uninstall</a>';
 									}

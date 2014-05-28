@@ -104,7 +104,7 @@ class Router
 			if( Misc::data('route', 'request') != '' )
 			{
 				$route = str_replace('/', DS, Security::sanitize(Misc::data('route', 'request'), 'route'));
-				if( strpos($route, 'plugin/') === 0)
+				if( strpos($route, 'plugin' . DS) === 0)
 				{
 					return self::getPluginRoute($route);
 				}
@@ -156,7 +156,7 @@ class Router
 		);
 	}
 
-	protected function getPluginRoute( $route )
+	protected static  function getPluginRoute( $route )
 	{
 		$route = str_replace('plugins' . DS, '', $route);
 		$route = explode(DS, $route);
@@ -164,8 +164,8 @@ class Router
 		$plugin_name = strtolower(current($route));
 		array_shift($route);
 		$route = implode(DS, $route);
-
-		if( empty($route) );
+        
+		if( empty($route) )
 		{
 			$route = 'home';
 		}

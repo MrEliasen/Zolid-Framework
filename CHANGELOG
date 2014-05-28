@@ -1,4 +1,11 @@
-[v 0.2.0.0] - 25th of May, 2014
+[v 0.2.0.1] - 28th of May, 2014
+---------------------------------------
+ - Fixed an issue where the example plugin's "controller" directory was spelled incorrectly
+ - Fixed an issue where plugin routing did not work.
+ - Fixed an issue where the system would not function on local webservers, specially on windows.
+ - Updated plugin functionality to support a settings page from the admin area.
+
+ [v 0.2.0.0] - 25th of May, 2014
 ---------------------------------------
  - Fixed an issue with password reset not working
  - Fixed installer bug where you had to create the avatar directory to continue.

@@ -52,9 +52,13 @@ class AppModel
 		                PDO::ATTR_EMULATE_PREPARES => false
 		            )
 	            );
-
-	            $this->installed = true;
-			}
+                
+                // This avoids issues on some webservers like WAMP on windows.
+                if( Configure::get('database/dbname') != '' && Configure::get('database/user') != '' )
+                {
+                    $this->installed = true;
+                }
+            }
 			catch (PDOException $e) {
 				if( $this->installed )
 				{
