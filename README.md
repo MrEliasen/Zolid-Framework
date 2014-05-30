@@ -10,7 +10,7 @@ Thanks in advance!
 If you find a/ny bugs, please submit them [here](https://github.com/MrEliasen/Zolid-Framework/issues/new). It's much easier to keep track of it this way. However feed free to contact me directly if you prefer this.
 
 ## 0.2.0.1 (28th of May 2014)
-You can find a list [here](https://github.com/MrEliasen/Zolid-Framework/wiki/Known-Bugs) with the current known bugs and potentially fixes.
+You can find a list of changes [here](https://github.com/MrEliasen/Zolid-Framework/wiki/CHANGELOG)
 
 ##Documentation
 I am currently working on the documentation. You can find it the [wiki/documentation here](https://github.com/MrEliasen/Zolid-Framework/wiki) 
